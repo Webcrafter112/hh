@@ -706,7 +706,7 @@
       return Math.max(0.9, Math.min(4.3, visHalfW() * 0.82));
     }
     function isNarrow() { return camera.aspect < 0.9; }
-    var T = { x: 0, y: -0.4, s: 1, ry: 0, rz: 0 };
+    var T = { x: 0, y: -0.4, s: 1, rx: 0, ry: 0, rz: 0 };
 
     /* Floating candy shapes around the cone */
     var floaters = [];
@@ -760,7 +760,7 @@
       var t = clock.getElapsedTime();
       if (!reducedMotion) {
         heroGroup.rotation.y += ((targetRY + T.ry + t * 0.12) - heroGroup.rotation.y) * 0.06;
-        heroGroup.rotation.x += (targetRX - heroGroup.rotation.x) * 0.06;
+        heroGroup.rotation.x += ((targetRX + T.rx) - heroGroup.rotation.x) * 0.06;
         heroGroup.rotation.z += (T.rz - heroGroup.rotation.z) * 0.06;
         heroGroup.position.x += (T.x - heroGroup.position.x) * 0.08;
         heroGroup.position.y += ((T.y + Math.sin(t * 0.9) * 0.12) - heroGroup.position.y) * 0.08;
@@ -788,11 +788,15 @@
 
       /* Absolute waypoints: each leg starts exactly where the previous ended,
          so scrub-capture timing can never desync the journey. */
-      var W0 = { x: function () { return xSide(); },         y: -0.4,  s: 1,    ry: 0,               rz: 0 };
-      var W1 = { x: function () { return -xEdge(); },        y: -0.05, s: 0.62, ry: Math.PI,         rz: 0.14 };
-      var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, ry: 2 * Math.PI,     rz: -0.12 };
-      var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  ry: 3 * Math.PI,     rz: 0.1 };
-      var W4 = {                                             y: -6,    s: 0.45, ry: 3 * Math.PI + 1.6 };
+      var PI = Math.PI;
+      /* Each leg tumbles through full turns on extra axes and lands upright:
+         leg 1 = forward somersault (rx), leg 2 = barrel roll (rz),
+         leg 3 = both at once, footer = tips over while diving. */
+      var W0 = { x: function () { return xSide(); },         y: -0.4,  s: 1,    rx: 0,            ry: 0,           rz: 0 };
+      var W1 = { x: function () { return -xEdge(); },        y: -0.05, s: 0.62, rx: 2 * PI,       ry: PI,          rz: 0.14 };
+      var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, rx: 2 * PI,       ry: 2 * PI,      rz: -2 * PI - 0.12 };
+      var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  rx: 4 * PI,       ry: 3 * PI,      rz: -4 * PI + 0.1 };
+      var W4 = {                                             y: -6,    s: 0.45, rx: 4 * PI + 1.2, ry: 3 * PI + 1.6 };
 
       function leg(trigger, fromW, toW, startAt, endAt) {
         var to = Object.assign({}, toW, {
@@ -812,7 +816,7 @@
       leg('#sorten', W0, W1);                                  /* Hero → Sorten: left edge, half turn, shrink */
       leg('#warum', W1, W2);                                   /* Sorten → Warum: right edge, next half turn */
       leg('#besuch', W2, W3);                                  /* Warum → Besuch: back left, tilted */
-      leg('footer', { y: W3.y, s: W3.s, ry: W3.ry }, W4, 'top 85%', 'top 50%'); /* dive away */
+      leg('footer', { y: W3.y, s: W3.s, rx: W3.rx, ry: W3.ry }, W4, 'top 85%', 'top 50%'); /* dive away */
     }
   }
 
