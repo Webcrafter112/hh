@@ -174,9 +174,21 @@
   .hero-canvas-wrap {
     position: relative;
     height: min(78vh, 680px);
-    z-index: 1;
+  }
+
+  /* Fixed 3D layer: the ice cream travels with you down the page */
+  #scene-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
   }
   #hero-canvas { width: 100%; height: 100%; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Without motion, keep the scene inside the hero and let it scroll away */
+    #scene-layer { position: absolute; height: 100vh; }
+  }
 
   .scroll-hint {
     position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -365,6 +377,11 @@
 </head>
 <body>
 
+<!-- Fixed 3D scene: follows the scroll through the whole page -->
+<div id="scene-layer" aria-hidden="true">
+  <canvas id="hero-canvas"></canvas>
+</div>
+
 <!-- Navigation -->
 <nav class="nav" aria-label="Hauptnavigation">
   <a class="nav-logo" href="#top" aria-label="Eiszauber Startseite">
@@ -405,9 +422,7 @@
       <div class="stat" role="listitem"><b>12</b><span>vegane Kreationen</span></div>
     </div>
   </div>
-  <div class="hero-canvas-wrap" aria-hidden="true">
-    <canvas id="hero-canvas"></canvas>
-  </div>
+  <div class="hero-canvas-wrap" aria-hidden="true"></div>
   <div class="scroll-hint" aria-hidden="true">
     <div class="wheel"></div>
     Scrollen
@@ -712,6 +727,21 @@
 
     heroGroup.position.y = -0.4;
 
+    /* ---- Scroll journey: waypoint proxy the render loop eases toward ---- */
+    function visHalfW() {
+      return Math.tan((38 / 2) * Math.PI / 180) * 9 * camera.aspect;
+    }
+    /* Hero resting spot (right column) */
+    function xSide() {
+      return Math.max(0.8, Math.min(3.2, visHalfW() * 0.6));
+    }
+    /* Travel lane at the screen edge, clear of the content column */
+    function xEdge() {
+      return Math.max(0.9, Math.min(4.3, visHalfW() * 0.82));
+    }
+    function isNarrow() { return camera.aspect < 0.9; }
+    var T = { x: 0, y: -0.4, s: 1, ry: 0, rz: 0 };
+
     /* Floating candy shapes around the cone */
     var floaters = [];
     var floatDefs = [
@@ -725,6 +755,7 @@
       var mesh = new THREE.Mesh(d.geo, new THREE.MeshStandardMaterial({ color: d.color, roughness: 0.3 }));
       mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
       mesh.userData.seed = idx * 1.7;
+      mesh.userData.baseY = d.pos[1];
       scene.add(mesh);
       floaters.push(mesh);
     });
@@ -752,17 +783,28 @@
     }
 
     var clock = new THREE.Clock();
-    var scrollSpin = { y: 0 };
+
+    /* Start position: right column on desktop, centered above the copy on mobile */
+    resize();
+    T.x = isNarrow() ? 0 : xSide();
+    heroGroup.position.x = T.x;
 
     function tick() {
       resize();
       var t = clock.getElapsedTime();
       if (!reducedMotion) {
-        heroGroup.rotation.y += ((targetRY + scrollSpin.y + t * 0.12) - heroGroup.rotation.y) * 0.06;
+        heroGroup.rotation.y += ((targetRY + T.ry + t * 0.12) - heroGroup.rotation.y) * 0.06;
         heroGroup.rotation.x += (targetRX - heroGroup.rotation.x) * 0.06;
-        heroGroup.position.y = -0.4 + Math.sin(t * 0.9) * 0.12;
+        heroGroup.rotation.z += (T.rz - heroGroup.rotation.z) * 0.06;
+        heroGroup.position.x += (T.x - heroGroup.position.x) * 0.08;
+        heroGroup.position.y += ((T.y + Math.sin(t * 0.9) * 0.12) - heroGroup.position.y) * 0.08;
+        var s = T.s * (isNarrow() ? 0.62 : 1);
+        heroGroup.scale.x += (s - heroGroup.scale.x) * 0.08;
+        heroGroup.scale.y = heroGroup.scale.z = heroGroup.scale.x;
+        var scrollN = window.scrollY / window.innerHeight;
         floaters.forEach(function (m) {
-          m.position.y += Math.sin(t * 0.8 + m.userData.seed) * 0.004;
+          /* Parallax: candy drifts upward and out as you scroll down */
+          m.position.y = m.userData.baseY + Math.sin(t * 0.8 + m.userData.seed) * 0.25 + scrollN * (1.6 + m.userData.seed);
           m.rotation.x = t * 0.4 + m.userData.seed;
           m.rotation.y = t * 0.3 + m.userData.seed;
         });
@@ -774,14 +816,37 @@
     }
     tick();
 
-    /* Scroll-driven spin of the ice cream */
+    /* Scroll journey: the cone flies from section to section as you scroll */
     if (window.gsap && window.ScrollTrigger && !reducedMotion) {
       gsap.registerPlugin(ScrollTrigger);
-      gsap.to(scrollSpin, {
-        y: Math.PI * 2,
-        ease: 'none',
-        scrollTrigger: { trigger: '#top', start: 'top top', end: 'bottom top', scrub: 0.6 }
-      });
+
+      /* Absolute waypoints: each leg starts exactly where the previous ended,
+         so scrub-capture timing can never desync the journey. */
+      var W0 = { x: function () { return xSide(); },         y: -0.4,  s: 1,    ry: 0,               rz: 0 };
+      var W1 = { x: function () { return -xEdge(); },        y: -0.05, s: 0.62, ry: Math.PI,         rz: 0.14 };
+      var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, ry: 2 * Math.PI,     rz: -0.12 };
+      var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  ry: 3 * Math.PI,     rz: 0.1 };
+      var W4 = {                                             y: -6,    s: 0.45, ry: 3 * Math.PI + 1.6 };
+
+      function leg(trigger, fromW, toW, startAt, endAt) {
+        var to = Object.assign({}, toW, {
+          ease: 'none',
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: trigger,
+            start: startAt || 'top 65%',
+            end: endAt || 'top 15%',
+            scrub: 0.6,
+            invalidateOnRefresh: true
+          }
+        });
+        gsap.fromTo(T, Object.assign({}, fromW), to);
+      }
+
+      leg('#sorten', W0, W1);                                  /* Hero → Sorten: left edge, half turn, shrink */
+      leg('#warum', W1, W2);                                   /* Sorten → Warum: right edge, next half turn */
+      leg('#besuch', W2, W3);                                  /* Warum → Besuch: back left, tilted */
+      leg('footer', { y: W3.y, s: W3.s, ry: W3.ry }, W4, 'top 85%', 'top 50%'); /* dive away */
     }
   }
 
