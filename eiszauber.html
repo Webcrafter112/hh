@@ -237,7 +237,10 @@
   /* ---------- Sections ---------- */
   .section { max-width: 1200px; margin: 0 auto; padding: var(--space-7) var(--space-4); }
 
-  .section-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-6); }
+  /* The staged sections flow into each other: tighter vertical rhythm */
+  #sorten, #warum { padding-block: var(--space-5); }
+
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-4); }
   .section-head .eyebrow {
     display: inline-block; font-weight: 700; font-size: .85rem;
     letter-spacing: .12em; text-transform: uppercase; color: var(--strawberry-deep);
@@ -667,7 +670,7 @@
   if (!reducedMotion && flavorSlides.length) {
     document.getElementById('sorten').classList.add('is-staged');
     var flavorScroll = document.getElementById('flavor-scroll');
-    flavorScroll.style.height = ((flavorSlides.length - 1) * 90 + 100) + 'vh';
+    flavorScroll.style.height = ((flavorSlides.length - 1) * 55 + 100) + 'vh';
 
     function layoutFlavors() {
       var vh = window.innerHeight;
@@ -713,7 +716,7 @@
   if (!reducedMotion && whyCards.length) {
     document.getElementById('warum').classList.add('is-staged');
     var whyScroll = document.getElementById('why-scroll');
-    whyScroll.style.height = ((whyCards.length - 1) * 90 + 100) + 'vh';
+    whyScroll.style.height = ((whyCards.length - 1) * 55 + 100) + 'vh';
 
     /* One entrance per card, parameterized by d (1 = fully staged, 0 = center):
        1: flip out of the depth · 2: rolls in from the left ·
