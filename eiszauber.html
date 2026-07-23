@@ -186,8 +186,8 @@
   #hero-canvas { width: 100%; height: 100%; display: block; }
 
   @media (prefers-reduced-motion: reduce) {
-    /* Without motion, keep the scene inside the hero and let it scroll away */
-    #scene-layer { position: absolute; height: 100vh; }
+    /* Without motion, keep the scene inside the hero (behind the text) and let it scroll away */
+    #scene-layer { position: absolute; height: 100vh; z-index: -1; }
   }
 
   .scroll-hint {
@@ -677,22 +677,28 @@
     cone.position.y = -1.55;
     heroGroup.add(cone);
 
-    /* Creamy scoops */
-    function scoop(color, y, r, xOff) {
+    /* Creamy scoops — individual objects so they can drop onto the cone */
+    function scoopMesh(color, r) {
       var m = new THREE.Mesh(
         new THREE.SphereGeometry(r, 48, 48),
         new THREE.MeshStandardMaterial({ color: color, roughness: 0.35, metalness: 0.02 })
       );
-      m.position.set(xOff || 0, y, 0);
       m.scale.y = 0.92;
-      heroGroup.add(m);
       return m;
     }
-    scoop(0xE84D8A, 0.0, 1.12);          /* strawberry */
-    scoop(0x7FE0C3, 1.05, 0.95, -0.12);  /* mint */
-    var topScoop = scoop(0xFFE8B8, 2.0, 0.8, 0.08); /* vanilla */
+    var scoop1 = scoopMesh(0xE84D8A, 1.12);   /* strawberry (bottom) */
+    scoop1.position.set(0, 0, 0);
+    heroGroup.add(scoop1);
 
-    /* Sprinkles on top scoop */
+    var scoop2 = scoopMesh(0x7FE0C3, 0.95);   /* mint (middle) */
+    scoop2.position.set(-0.12, 1.05, 0);
+    heroGroup.add(scoop2);
+
+    /* Vanilla top scoop: a group carrying its sprinkles, cherry and stem */
+    var scoop3 = new THREE.Group();
+    scoop3.position.set(0.08, 2.0, 0);
+    scoop3.add(scoopMesh(0xFFE8B8, 0.8));
+
     var sprinkleColors = [0xE84D8A, 0x7C6AE8, 0x2E9C82, 0xF0932B, 0xffffff];
     var sprinkleGeo = new THREE.CapsuleGeometry(0.035, 0.14, 4, 8);
     for (var s = 0; s < 42; s++) {
@@ -702,28 +708,28 @@
       var phi = Math.random() * Math.PI * 0.45; /* upper hemisphere only */
       var R = 0.81;
       sp.position.set(
-        topScoop.position.x + R * Math.sin(phi) * Math.cos(theta),
-        topScoop.position.y + R * Math.cos(phi) * 0.92,
-        topScoop.position.z + R * Math.sin(phi) * Math.sin(theta)
+        R * Math.sin(phi) * Math.cos(theta),
+        R * Math.cos(phi) * 0.92,
+        R * Math.sin(phi) * Math.sin(theta)
       );
       sp.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-      heroGroup.add(sp);
+      scoop3.add(sp);
     }
 
-    /* Cherry on top */
     var cherry = new THREE.Mesh(
       new THREE.SphereGeometry(0.22, 32, 32),
       new THREE.MeshStandardMaterial({ color: 0xC2185B, roughness: 0.15 })
     );
-    cherry.position.set(0.08, 2.85, 0);
-    heroGroup.add(cherry);
+    cherry.position.set(0, 0.85, 0);
+    scoop3.add(cherry);
     var stem = new THREE.Mesh(
       new THREE.CylinderGeometry(0.025, 0.035, 0.45, 8),
       new THREE.MeshStandardMaterial({ color: 0x7A4A32, roughness: 0.8 })
     );
-    stem.position.set(0.14, 3.15, 0);
+    stem.position.set(0.06, 1.15, 0);
     stem.rotation.z = -0.35;
-    heroGroup.add(stem);
+    scoop3.add(stem);
+    heroGroup.add(scoop3);
 
     heroGroup.position.y = -0.4;
 
@@ -731,16 +737,64 @@
     function visHalfW() {
       return Math.tan((38 / 2) * Math.PI / 180) * 9 * camera.aspect;
     }
-    /* Hero resting spot (right column) */
+    /* Hero resting spot: right column on desktop, centered on narrow screens */
     function xSide() {
+      if (isNarrow()) return 0;
       return Math.max(0.8, Math.min(3.2, visHalfW() * 0.6));
     }
+    function heroY() { return isNarrow() ? 1.1 : 0.2; }
     /* Travel lane at the screen edge, clear of the content column */
     function xEdge() {
       return Math.max(0.9, Math.min(4.3, visHalfW() * 0.82));
     }
     function isNarrow() { return camera.aspect < 0.9; }
     var T = { x: 0, y: -0.4, s: 1, rx: 0, ry: 0, rz: 0 };
+
+    /* Waypoints of the scroll journey. Each leg tumbles through full turns
+       on extra axes and lands upright: leg 1 = forward somersault (rx),
+       leg 2 = barrel roll (rz), leg 3 = both, footer = tips over diving. */
+    var PI = Math.PI;
+    var W0 = { x: xSide,                                   y: heroY, s: 1,    rx: 0,            ry: 0,           rz: 0 };
+    var W1 = { x: function () { return -xEdge(); },        y: -0.05, s: 0.62, rx: 2 * PI,       ry: PI,          rz: 0.14 };
+    var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, rx: 2 * PI,       ry: 2 * PI,      rz: -2 * PI - 0.12 };
+    var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  rx: 4 * PI,       ry: 3 * PI,      rz: -4 * PI + 0.1 };
+    var W4 = {                                             y: -6,    s: 0.45, rx: 4 * PI + 1.2, ry: 3 * PI + 1.6 };
+
+    /* The journey is computed directly from the scroll position every frame —
+       deterministic at any offset, immune to tween start-value capture. */
+    var journeyLegs = [
+      { sel: '#sorten', from: W0, to: W1, sF: 0.65, eF: 0.15 },
+      { sel: '#warum',  from: W1, to: W2, sF: 0.65, eF: 0.15 },
+      { sel: '#besuch', from: W2, to: W3, sF: 0.65, eF: 0.15 },
+      { sel: 'footer',  from: W3, to: W4, sF: 0.85, eF: 0.50 }
+    ];
+    var JOURNEY_AXES = ['x', 'y', 's', 'rx', 'ry', 'rz'];
+    function evalW(w, k, fb) {
+      var v = w[k];
+      if (v === undefined) return fb;
+      return typeof v === 'function' ? v() : v;
+    }
+    function updateJourney() {
+      var vh = window.innerHeight, sc = window.scrollY;
+      var cur = {};
+      JOURNEY_AXES.forEach(function (k) { cur[k] = evalW(W0, k, 0); });
+      journeyLegs.forEach(function (l) {
+        if (!l.el) l.el = document.querySelector(l.sel);
+        if (!l.el) return;
+        var top = l.el.getBoundingClientRect().top + sc;
+        var s = top - l.sF * vh, e = top - l.eF * vh;
+        var p = (sc - s) / (e - s);
+        if (p <= 0) return;
+        if (p > 1) p = 1;
+        JOURNEY_AXES.forEach(function (k) {
+          var a = evalW(l.from, k, cur[k]);
+          var b = evalW(l.to, k, a);
+          cur[k] = a + (b - a) * p;
+        });
+      });
+      T.x = cur.x; T.y = cur.y; T.s = cur.s;
+      T.rx = cur.rx; T.ry = cur.ry; T.rz = cur.rz;
+    }
 
     /* Floating candy shapes around the cone */
     var floaters = [];
@@ -786,13 +840,16 @@
 
     /* Start position: right column on desktop, centered above the copy on mobile */
     resize();
-    T.x = isNarrow() ? 0 : xSide();
+    T.x = xSide();
+    T.y = heroY();
     heroGroup.position.x = T.x;
+    heroGroup.position.y = T.y;
 
     function tick() {
       resize();
       var t = clock.getElapsedTime();
       if (!reducedMotion) {
+        updateJourney();
         heroGroup.rotation.y += ((targetRY + T.ry + t * 0.12) - heroGroup.rotation.y) * 0.06;
         heroGroup.rotation.x += ((targetRX + T.rx) - heroGroup.rotation.x) * 0.06;
         heroGroup.rotation.z += (T.rz - heroGroup.rotation.z) * 0.06;
@@ -816,41 +873,33 @@
     }
     tick();
 
-    /* Scroll journey: the cone flies from section to section as you scroll */
+    /* Scoop drop needs GSAP; the journey itself runs in updateJourney() */
     if (window.gsap && window.ScrollTrigger && !reducedMotion) {
       gsap.registerPlugin(ScrollTrigger);
 
-      /* Absolute waypoints: each leg starts exactly where the previous ended,
-         so scrub-capture timing can never desync the journey. */
-      var PI = Math.PI;
-      /* Each leg tumbles through full turns on extra axes and lands upright:
-         leg 1 = forward somersault (rx), leg 2 = barrel roll (rz),
-         leg 3 = both at once, footer = tips over while diving. */
-      var W0 = { x: function () { return xSide(); },         y: -0.4,  s: 1,    rx: 0,            ry: 0,           rz: 0 };
-      var W1 = { x: function () { return -xEdge(); },        y: -0.05, s: 0.62, rx: 2 * PI,       ry: PI,          rz: 0.14 };
-      var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, rx: 2 * PI,       ry: 2 * PI,      rz: -2 * PI - 0.12 };
-      var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  rx: 4 * PI,       ry: 3 * PI,      rz: -4 * PI + 0.1 };
-      var W4 = {                                             y: -6,    s: 0.45, rx: 4 * PI + 1.2, ry: 3 * PI + 1.6 };
+      /* Scoop drop: the cone starts empty, the scoops hover above it and
+         fall into place one after another during the first scroll stretch. */
+      /* Scoops wait above the viewport and fall in from the top when scrolling */
+      var hoverScale = isNarrow() ? 0.6 : 1;
+      var drops = [
+        { g: scoop1, hx: -0.9 * hoverScale, hy: 4.2 * hoverScale, rz: 0.55 },
+        { g: scoop2, hx: 1.1 * hoverScale,  hy: 4.8 * hoverScale, rz: -0.6 },
+        { g: scoop3, hx: 0.4 * hoverScale,  hy: 5.4 * hoverScale, rz: 0.35 }
+      ];
+      var dropTl = gsap.timeline({
+        scrollTrigger: { trigger: '#top', start: 'top top', end: '+=45%', scrub: 0.5 }
+      });
+      drops.forEach(function (d, i) {
+        var fx = d.g.position.x, fy = d.g.position.y;
+        d.g.position.x = fx + d.hx;
+        d.g.position.y = fy + d.hy;
+        d.g.rotation.z = d.rz;
+        var at = i * 0.45;
+        dropTl.to(d.g.position, { y: fy, ease: 'bounce.out', duration: 1 }, at)
+              .to(d.g.position, { x: fx, ease: 'power1.inOut', duration: 0.45 }, at)
+              .to(d.g.rotation, { z: 0, ease: 'power1.inOut', duration: 0.5 }, at);
+      });
 
-      function leg(trigger, fromW, toW, startAt, endAt) {
-        var to = Object.assign({}, toW, {
-          ease: 'none',
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: trigger,
-            start: startAt || 'top 65%',
-            end: endAt || 'top 15%',
-            scrub: 0.6,
-            invalidateOnRefresh: true
-          }
-        });
-        gsap.fromTo(T, Object.assign({}, fromW), to);
-      }
-
-      leg('#sorten', W0, W1);                                  /* Hero → Sorten: left edge, half turn, shrink */
-      leg('#warum', W1, W2);                                   /* Sorten → Warum: right edge, next half turn */
-      leg('#besuch', W2, W3);                                  /* Warum → Besuch: back left, tilted */
-      leg('footer', { y: W3.y, s: W3.s, rx: W3.rx, ry: W3.ry }, W4, 'top 85%', 'top 50%'); /* dive away */
     }
   }
 
