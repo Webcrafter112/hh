@@ -314,7 +314,12 @@
   }
 
   /* ---------- Why us (clay tiles) ---------- */
-  .why { background: var(--bg-alt); border-radius: 48px; margin-inline: var(--space-2); }
+  .why {
+    background: var(--bg-alt); border-radius: 48px;
+    /* stay centered: margin-inline 16px would override the section's auto-centering */
+    max-width: min(1200px, calc(100% - 32px));
+    margin-inline: auto;
+  }
   #why-scroll { position: relative; }
   .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
 
@@ -681,7 +686,7 @@
        3: corkscrew drop from above · 4: 3D screw rising from below */
     var whyEntries = [
       function (d) { return 'rotateY(' + (-d * 120) + 'deg) translate3d(0, 0, ' + (-d * 420) + 'px)'; },
-      function (d) { return 'translate3d(' + (-d * 65) + 'vw, ' + (d * 8) + 'vh, 0) rotate(' + (-d * 220) + 'deg)'; },
+      function (d) { return 'translate3d(' + (-d * 82) + 'vw, ' + (d * 8) + 'vh, 0) rotate(' + (-d * 220) + 'deg)'; },
       function (d) { return 'translate3d(0, ' + (-d * 70) + 'vh, ' + (-d * 150) + 'px) rotateX(' + (d * 55) + 'deg) rotate(' + (d * 100) + 'deg)'; },
       function (d) { return 'translate3d(0, ' + (d * 45) + 'vh, ' + (-d * 650) + 'px) rotate3d(1, 0.6, 0.3, ' + (d * 150) + 'deg)'; }
     ];
