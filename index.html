@@ -315,7 +315,32 @@
 
   /* ---------- Why us (clay tiles) ---------- */
   .why { background: var(--bg-alt); border-radius: 48px; margin-inline: var(--space-2); }
+  #why-scroll { position: relative; }
   .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
+
+  /* Staged mode: pinned stage, one reason in the spotlight at a time */
+  #warum.is-staged .why-grid {
+    position: sticky; top: 0;
+    height: 100dvh;
+    display: block;
+    perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+  #warum.is-staged .why-card {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 90vw);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  #warum.is-staged .why-card:hover { transform: translate(-50%, -50%); }
+  #warum.is-staged .why-card .why-icon { margin: 0 auto var(--space-3); width: 80px; height: 80px; border-radius: 26px; }
+  #warum.is-staged .why-card .why-icon svg { width: 38px; height: 38px; }
+  #warum.is-staged .why-card h3 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); margin-bottom: 10px; }
+  #warum.is-staged .why-card p { font-size: 1.08rem; max-width: 44ch; margin: 0 auto; }
 
   .why-card {
     background: #fff; border-radius: var(--radius-card);
@@ -473,37 +498,39 @@
   <div class="section-head tilt-in">
     <span class="eyebrow">Warum Eiszauber</span>
     <h2>Gutes Eis braucht gute Gründe</h2>
-    <p>Vier Dinge, die uns wichtig sind – jeden Tag, bei jeder Kugel.</p>
+    <p>Vier Dinge, die uns wichtig sind – scroll weiter, jeder Grund hüpft einzeln ins Rampenlicht.</p>
   </div>
-  <div class="why-grid">
-    <article class="why-card tilt-in">
+  <div id="why-scroll">
+  <div class="why-grid" id="why-stage">
+    <article class="why-card">
       <div class="why-icon" style="background: linear-gradient(135deg, #FF9EC4, #E84D8A);">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21C7 16.6 3 13.3 3 9.5A4.5 4.5 0 0 1 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5A4.5 4.5 0 0 1 21 9.5c0 3.8-4 7.1-9 11.5z"/></svg>
       </div>
       <h3>Von Hand gerührt</h3>
       <p>Kein Fließband, keine Fertigmischung. Unsere Eismeisterin rührt jede Sorte täglich frisch in kleinen Chargen.</p>
     </article>
-    <article class="why-card tilt-in">
+    <article class="why-card">
       <div class="why-icon" style="background: linear-gradient(135deg, #7FE0C3, #2E9C82);">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3m0 0a6 6 0 0 1 6 6c0 4-2.7 7.3-6 9-3.3-1.7-6-5-6-9a6 6 0 0 1 6-6z"/></svg>
       </div>
       <h3>Regional & saisonal</h3>
       <p>Milch vom Hof Lindner, Erdbeeren aus dem Umland – kurze Wege schmeckt man einfach.</p>
     </article>
-    <article class="why-card tilt-in">
+    <article class="why-card">
       <div class="why-icon" style="background: linear-gradient(135deg, #A99BFF, #7C6AE8);">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v4M16 3v4M4 9h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M9 14l2 2 4-4"/></svg>
       </div>
       <h3>Vegan? Aber sicher!</h3>
       <p>Zwölf Sorten auf Hafer-, Mandel- oder Kokosbasis – so cremig, dass es keiner glaubt.</p>
     </article>
-    <article class="why-card tilt-in">
+    <article class="why-card">
       <div class="why-icon" style="background: linear-gradient(135deg, #FFD79E, #E8A34D);">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M9 13l-1.5 8L12 18.5 16.5 21 15 13"/></svg>
       </div>
       <h3>Ausgezeichnet</h3>
       <p>„Bestes Eis der Stadt" – drei Jahre in Folge. Wir geben den Pokal trotzdem nicht her.</p>
     </article>
+  </div>
   </div>
 </section>
 
@@ -638,6 +665,61 @@
     }, { passive: true });
     window.addEventListener('resize', layoutFlavors);
     layoutFlavors();
+  }
+
+  /* Why-us spotlight: same pinned stage, but every card hops in with its
+     own distinct 3D entrance. */
+  var whyStageEl = document.getElementById('why-stage');
+  var whyCards = whyStageEl ? Array.prototype.slice.call(whyStageEl.children) : [];
+  if (!reducedMotion && whyCards.length) {
+    document.getElementById('warum').classList.add('is-staged');
+    var whyScroll = document.getElementById('why-scroll');
+    whyScroll.style.height = ((whyCards.length - 1) * 90 + 100) + 'vh';
+
+    /* One entrance per card, parameterized by d (1 = fully staged, 0 = center):
+       1: flip out of the depth · 2: rolls in from the left ·
+       3: corkscrew drop from above · 4: 3D screw rising from below */
+    var whyEntries = [
+      function (d) { return 'rotateY(' + (-d * 120) + 'deg) translate3d(0, 0, ' + (-d * 420) + 'px)'; },
+      function (d) { return 'translate3d(' + (-d * 65) + 'vw, ' + (d * 8) + 'vh, 0) rotate(' + (-d * 220) + 'deg)'; },
+      function (d) { return 'translate3d(0, ' + (-d * 70) + 'vh, ' + (-d * 150) + 'px) rotateX(' + (d * 55) + 'deg) rotate(' + (d * 100) + 'deg)'; },
+      function (d) { return 'translate3d(0, ' + (d * 45) + 'vh, ' + (-d * 650) + 'px) rotate3d(1, 0.6, 0.3, ' + (d * 150) + 'deg)'; }
+    ];
+
+    function layoutWhy() {
+      var vh = window.innerHeight;
+      var rect = whyScroll.getBoundingClientRect();
+      var span = whyScroll.offsetHeight - vh;
+      var p = span > 0 ? -rect.top / span : 0;
+      p = Math.max(0, Math.min(1, p)) * (whyCards.length - 1);
+      whyCards.forEach(function (el, i) {
+        var d = i - p, tr, o;
+        if (d >= 0) {
+          var dd = Math.min(d, 1.15);
+          tr = whyEntries[i % whyEntries.length](dd);
+          o = 1 - dd * 0.55;
+        } else {
+          /* uniform exit: recedes up into the depth */
+          var e = -d;
+          tr = 'translate3d(0, ' + (e * -26) + 'vh, ' + (-e * 600) + 'px) rotateX(' + (-e * 18) + 'deg)';
+          o = 1 - e * 1.5;
+        }
+        el.style.transform = 'translate(-50%, -50%) ' + tr;
+        el.style.opacity = Math.max(0, Math.min(1, o));
+        el.style.zIndex = 100 - Math.round(Math.abs(d) * 10);
+        el.style.visibility = o <= 0.01 ? 'hidden' : 'visible';
+      });
+    }
+
+    var whyTicking = false;
+    window.addEventListener('scroll', function () {
+      if (!whyTicking) {
+        whyTicking = true;
+        requestAnimationFrame(function () { layoutWhy(); whyTicking = false; });
+      }
+    }, { passive: true });
+    window.addEventListener('resize', layoutWhy);
+    layoutWhy();
   }
 
   /* Duplicate marquee content for a seamless loop */
@@ -782,7 +864,7 @@
     var PI = Math.PI;
     var W0 = { x: xSide,                                   y: heroY, s: 1,    rx: 0,            ry: 0,           rz: 0 };
     var W1 = { x: function () { return -xEdge(); },        y: function () { return isNarrow() ? -1.6 : -0.05; }, s: 0.62, rx: 2 * PI, ry: PI, rz: 0.14 };
-    var W2 = { x: function () { return xEdge(); },         y: -0.25, s: 0.55, rx: 2 * PI,       ry: 2 * PI,      rz: -2 * PI - 0.12 };
+    var W2 = { x: function () { return xEdge(); },         y: function () { return isNarrow() ? -1.6 : -0.25; }, s: 0.55, rx: 2 * PI, ry: 2 * PI, rz: -2 * PI - 0.12 };
     var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  rx: 4 * PI,       ry: 3 * PI,      rz: -4 * PI + 0.1 };
     var W4 = {                                             y: -6,    s: 0.45, rx: 4 * PI + 1.2, ry: 3 * PI + 1.6 };
 
