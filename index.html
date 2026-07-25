@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eiszauber — Handgemachtes Eis mit Liebe</title>
+<meta name="description" content="Eiszauber – handgemachtes Eis aus regionalen Zutaten. Entdecke unsere Sorten in 3D.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF3F6;
+    --bg-alt: #F4F1FA;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --text: #3D2C3A;
+    --muted: #7A6875;
+    --strawberry: #E84D8A;
+    --strawberry-deep: #C22E6B;
+    --mint: #5ECBB0;
+    --mint-deep: #2E9C82;
+    --vanilla: #FFE8B8;
+    --choco: #7A4A32;
+    --blueberry: #7C6AE8;
+    --radius-card: 32px;
+    --radius-button: 20px;
+    --shadow-clay: 0 12px 24px rgba(194, 46, 107, 0.14), inset -4px -6px 12px rgba(194, 46, 107, 0.08), inset 4px 6px 12px rgba(255, 255, 255, 0.9);
+    --shadow-soft: 0 16px 40px rgba(61, 44, 58, 0.12);
+    --space-1: 8px; --space-2: 16px; --space-3: 24px; --space-4: 32px;
+    --space-5: 48px; --space-6: 64px; --space-7: 96px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; overflow-x: clip; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    /* clip (not hidden): hidden would make body a scroll container and break position:sticky */
+    overflow-x: clip;
+  }
+
+  h1, h2, h3 { font-family: 'Nunito', sans-serif; font-weight: 900; line-height: 1.1; }
+
+  a { color: inherit; }
+  button { font-family: inherit; cursor: pointer; }
+
+  :focus-visible {
+    outline: 3px solid var(--blueberry);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav {
+    position: fixed;
+    top: var(--space-2);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 10px 14px 10px 22px;
+    background: var(--card-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 3px solid rgba(255,255,255,0.9);
+    border-radius: 999px;
+    box-shadow: var(--shadow-clay);
+    width: min(92vw, 720px);
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.25rem;
+    text-decoration: none; color: var(--strawberry-deep);
+  }
+  .nav-logo svg { width: 30px; height: 30px; }
+
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    display: block; padding: 8px 16px; border-radius: 999px;
+    text-decoration: none; font-weight: 500; font-size: .95rem;
+    transition: background 200ms ease-out, color 200ms ease-out, transform 200ms ease-out;
+  }
+  .nav-links a:hover { background: var(--strawberry); color: #fff; transform: translateY(-2px); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--strawberry), var(--strawberry-deep));
+    color: #fff; border: none; border-radius: 999px;
+    padding: 10px 20px; font-weight: 700; font-size: .95rem;
+    box-shadow: 0 6px 16px rgba(194,46,107,.35);
+    transition: transform 200ms cubic-bezier(.34,1.56,.64,1), box-shadow 200ms ease-out;
+    text-decoration: none;
+  }
+  .nav-cta:hover { transform: scale(1.06); box-shadow: 0 10px 24px rgba(194,46,107,.45); }
+  .nav-cta:active { transform: scale(0.94); }
+
+  @media (max-width: 640px) { .nav-links { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px var(--space-4) var(--space-6);
+    gap: var(--space-4);
+  }
+
+  .hero-copy { position: relative; z-index: 2; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 3px solid var(--vanilla);
+    border-radius: 999px; padding: 8px 18px;
+    font-weight: 700; font-size: .9rem; color: var(--choco);
+    box-shadow: var(--shadow-clay);
+    margin-bottom: var(--space-3);
+  }
+  .hero-badge svg { width: 18px; height: 18px; color: var(--strawberry); }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4.5rem);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-3);
+  }
+  .hero h1 .swirl {
+    background: linear-gradient(120deg, var(--strawberry) 10%, var(--blueberry) 55%, var(--mint) 95%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .hero p { font-size: 1.15rem; color: var(--muted); max-width: 46ch; margin-bottom: var(--space-4); }
+
+  .hero-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--strawberry), var(--strawberry-deep));
+    color: #fff; border: none; border-radius: var(--radius-button);
+    padding: 16px 32px; font-size: 1.05rem; font-weight: 700;
+    box-shadow: 0 10px 24px rgba(194,46,107,.38), inset 2px 3px 6px rgba(255,255,255,.35);
+    transition: transform 250ms cubic-bezier(.34,1.56,.64,1), box-shadow 250ms ease-out;
+    text-decoration: none;
+  }
+  .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 32px rgba(194,46,107,.45), inset 2px 3px 6px rgba(255,255,255,.35); }
+  .btn-primary:active { transform: scale(.95); }
+  .btn-primary svg { width: 20px; height: 20px; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #fff; color: var(--text);
+    border: 3px solid var(--mint); border-radius: var(--radius-button);
+    padding: 13px 28px; font-size: 1.05rem; font-weight: 700;
+    box-shadow: var(--shadow-clay);
+    transition: transform 250ms cubic-bezier(.34,1.56,.64,1), background 200ms;
+    text-decoration: none;
+  }
+  .btn-ghost:hover { transform: translateY(-4px); background: #F0FFF9; }
+  .btn-ghost:active { transform: scale(.95); }
+
+  .hero-stats { display: flex; gap: var(--space-4); margin-top: var(--space-5); flex-wrap: wrap; }
+  .stat b { display: block; font-family: 'Nunito'; font-size: 1.8rem; font-weight: 900; color: var(--strawberry-deep); }
+  .stat span { font-size: .9rem; color: var(--muted); }
+
+  .hero-canvas-wrap {
+    position: relative;
+    height: min(78vh, 680px);
+  }
+
+  /* Fixed 3D layer: the ice cream travels with you down the page */
+  #scene-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  #hero-canvas { width: 100%; height: 100%; display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Without motion, keep the scene inside the hero (behind the text) and let it scroll away */
+    #scene-layer { position: absolute; height: 100vh; z-index: -1; }
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--muted); font-size: .85rem; font-weight: 500;
+  }
+  .scroll-hint .wheel {
+    width: 26px; height: 42px; border: 3px solid var(--muted);
+    border-radius: 999px; position: relative;
+  }
+  .scroll-hint .wheel::after {
+    content: ''; position: absolute; top: 7px; left: 50%;
+    width: 5px; height: 9px; margin-left: -2.5px;
+    background: var(--strawberry); border-radius: 999px;
+    animation: wheel 1.6s ease-in-out infinite;
+  }
+  @keyframes wheel { 0%,100% { transform: translateY(0); opacity: 1; } 60% { transform: translateY(12px); opacity: .2; } }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 130px; text-align: center; }
+    .hero p { margin-inline: auto; }
+    .hero-actions, .hero-stats { justify-content: center; }
+    .hero-canvas-wrap { height: 52vh; order: -1; margin-top: -30px; }
+  }
+
+  /* ---------- Marquee ---------- */
+  .marquee-clip { overflow: hidden; padding: 12px 0; }
+  .marquee {
+    background: linear-gradient(90deg, var(--strawberry), var(--blueberry), var(--mint));
+    padding: 14px 0;
+    overflow: hidden;
+    transform: rotate(-1.2deg) scale(1.02);
+    box-shadow: 0 10px 30px rgba(124,106,232,.25);
+  }
+  .marquee-track {
+    display: flex; gap: var(--space-5); width: max-content;
+    animation: marquee 26s linear infinite;
+    font-family: 'Nunito'; font-weight: 800; color: #fff; font-size: 1.05rem;
+    white-space: nowrap;
+  }
+  .marquee-track span { display: inline-flex; align-items: center; gap: 12px; }
+  .marquee-track svg { width: 16px; height: 16px; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* ---------- Sections ---------- */
+  .section { max-width: 1200px; margin: 0 auto; padding: var(--space-7) var(--space-4); }
+
+  /* The staged sections flow into each other: tighter vertical rhythm */
+  #sorten, #warum { padding-block: var(--space-5); }
+
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-4); }
+  .section-head .eyebrow {
+    display: inline-block; font-weight: 700; font-size: .85rem;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--strawberry-deep);
+    background: #FFE3EE; border-radius: 999px; padding: 6px 16px;
+    margin-bottom: var(--space-2);
+  }
+  .section-head h2 { font-size: clamp(2rem, 4.5vw, 3rem); margin-bottom: var(--space-2); }
+  .section-head p { color: var(--muted); font-size: 1.1rem; }
+
+  /* ---------- Flavor spotlight (scroll-pinned 3D stage) ---------- */
+  #flavor-scroll { position: relative; }
+
+  /* Fallback layout (no JS / reduced motion): simple stacked list */
+  .flavor-stage {
+    display: flex; flex-direction: column; align-items: center;
+    gap: var(--space-4);
+  }
+
+  .flavor-slide {
+    position: relative;
+    width: min(620px, 90vw);
+    border-radius: var(--radius-card);
+    border: 3px solid rgba(255,255,255,.85);
+    padding: var(--space-5) var(--space-4);
+    text-align: center; color: #fff;
+    box-shadow: 0 24px 60px rgba(61,44,58,.28);
+    overflow: hidden;
+  }
+  .flavor-slide .slide-num {
+    position: absolute; top: 12px; right: 24px;
+    font-family: 'Nunito'; font-weight: 900; font-size: 4.5rem;
+    color: rgba(255,255,255,.22); line-height: 1;
+  }
+  .flavor-slide .tag {
+    display: inline-block;
+    font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    background: rgba(255,255,255,.25); padding: 5px 14px; border-radius: 999px;
+    margin-bottom: var(--space-2);
+  }
+  .flavor-slide .blob {
+    width: 110px; height: 110px; margin: 0 auto var(--space-2);
+    background: linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,255,255,.25));
+    border-radius: 46% 54% 55% 45% / 52% 44% 56% 48%;
+    box-shadow: inset -8px -12px 20px rgba(0,0,0,.12), inset 6px 8px 16px rgba(255,255,255,.5), 0 12px 24px rgba(61,44,58,.2);
+    animation: blob-morph 7s ease-in-out infinite alternate;
+  }
+  @keyframes blob-morph {
+    0%   { border-radius: 46% 54% 55% 45% / 52% 44% 56% 48%; }
+    100% { border-radius: 58% 42% 44% 56% / 44% 58% 42% 56%; }
+  }
+  .flavor-slide h3 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 6px; }
+  .flavor-slide p { font-size: 1.05rem; opacity: .94; max-width: 42ch; margin: 0 auto var(--space-3); }
+  .flavor-slide .price {
+    display: inline-block;
+    font-family: 'Nunito'; font-weight: 900; font-size: 1.9rem;
+    background: rgba(255,255,255,.22); border-radius: 999px; padding: 6px 26px;
+  }
+  .flavor-slide .price small { font-size: .9rem; font-weight: 700; opacity: .85; }
+
+  /* Staged mode (JS + motion): pinned viewport, cards emerge from depth */
+  #sorten.is-staged .flavor-stage {
+    position: sticky; top: 0;
+    height: 100dvh;
+    display: block;
+    perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+  #sorten.is-staged .flavor-slide {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* ---------- Why us (clay tiles) ---------- */
+  .why {
+    background: var(--bg-alt); border-radius: 48px;
+    /* stay centered: margin-inline 16px would override the section's auto-centering */
+    max-width: min(1200px, calc(100% - 32px));
+    margin-inline: auto;
+  }
+  #why-scroll { position: relative; }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
+
+  /* Staged mode: pinned stage, one reason in the spotlight at a time */
+  #warum.is-staged .why-grid {
+    position: sticky; top: 0;
+    height: 100dvh;
+    display: block;
+    perspective: 1400px;
+    transform-style: preserve-3d;
+  }
+  #warum.is-staged .why-card {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 90vw);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  #warum.is-staged .why-card:hover { transform: translate(-50%, -50%); }
+  #warum.is-staged .why-card .why-icon { margin: 0 auto var(--space-3); width: 80px; height: 80px; border-radius: 26px; }
+  #warum.is-staged .why-card .why-icon svg { width: 38px; height: 38px; }
+  #warum.is-staged .why-card h3 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); margin-bottom: 10px; }
+  #warum.is-staged .why-card p { font-size: 1.08rem; max-width: 44ch; margin: 0 auto; }
+
+  .why-card {
+    background: #fff; border-radius: var(--radius-card);
+    border: 3px solid rgba(255,255,255,.95);
+    box-shadow: var(--shadow-clay);
+    padding: var(--space-4);
+    transition: transform 300ms cubic-bezier(.34,1.56,.64,1), box-shadow 300ms ease-out;
+    will-change: transform;
+  }
+  .why-card:hover { transform: translateY(-8px) rotate(-1deg) scale(1.02); }
+
+  .why-icon {
+    width: 64px; height: 64px; border-radius: 22px;
+    display: grid; place-items: center;
+    margin-bottom: var(--space-2);
+    box-shadow: inset -3px -5px 10px rgba(0,0,0,.12), inset 3px 5px 10px rgba(255,255,255,.5);
+  }
+  .why-icon svg { width: 30px; height: 30px; color: #fff; }
+  .why-card h3 { font-size: 1.25rem; margin-bottom: 8px; }
+  .why-card p { color: var(--muted); font-size: .98rem; }
+
+  /* ---------- Visit ---------- */
+  .visit-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5);
+    align-items: center;
+  }
+  @media (max-width: 800px) { .visit-grid { grid-template-columns: 1fr; } }
+
+  .visit-card {
+    background: linear-gradient(145deg, #fff, #FFF0F5);
+    border-radius: var(--radius-card); border: 3px solid rgba(255,255,255,.95);
+    box-shadow: var(--shadow-soft); padding: var(--space-5);
+  }
+  .visit-card h2 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); margin-bottom: var(--space-3); }
+
+  .hours { list-style: none; }
+  .hours li {
+    display: flex; justify-content: space-between; gap: var(--space-3);
+    padding: 12px 0; border-bottom: 2px dashed #F3D6E2;
+    font-size: 1rem;
+  }
+  .hours li:last-child { border-bottom: none; }
+  .hours b { font-variant-numeric: tabular-nums; color: var(--strawberry-deep); }
+
+  .visit-info { display: flex; flex-direction: column; gap: var(--space-3); }
+  .info-row { display: flex; gap: var(--space-2); align-items: flex-start; }
+  .info-row .why-icon { width: 52px; height: 52px; border-radius: 18px; flex-shrink: 0; margin: 0; }
+  .info-row .why-icon svg { width: 24px; height: 24px; }
+  .info-row h3 { font-size: 1.1rem; }
+  .info-row p { color: var(--muted); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: var(--text); color: #FBEFF5;
+    margin-top: var(--space-7);
+    padding: var(--space-6) var(--space-4) var(--space-4);
+    border-radius: 48px 48px 0 0;
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: space-between; align-items: center; }
+  .footer-inner .nav-logo { color: #FF9EC4; }
+  footer p { opacity: .7; font-size: .9rem; }
+
+  /* ---------- 3D scroll transitions ---------- */
+  .tilt-in { transform-origin: 50% 100%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Fixed 3D scene: follows the scroll through the whole page -->
+<div id="scene-layer" aria-hidden="true">
+  <canvas id="hero-canvas"></canvas>
+</div>
+
+<!-- Navigation -->
+<nav class="nav" aria-label="Hauptnavigation">
+  <a class="nav-logo" href="#top" aria-label="Eiszauber Startseite">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 11a5 5 0 1 1 10 0 4 4 0 0 1-1 2.6L12 21l-4-7.4A4 4 0 0 1 7 11z" fill="#FF9EC4" stroke="#C22E6B"/>
+      <circle cx="10" cy="9" r="1" fill="#C22E6B" stroke="none"/>
+      <circle cx="14" cy="11" r="1" fill="#C22E6B" stroke="none"/>
+    </svg>
+    Eiszauber
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sorten">Sorten</a></li>
+    <li><a href="#warum">Warum wir</a></li>
+    <li><a href="#besuch">Besuch uns</a></li>
+  </ul>
+  <a class="nav-cta" href="#besuch">Vorbeikommen</a>
+</nav>
+
+<!-- Hero -->
+<header class="hero" id="top">
+  <div class="hero-copy">
+    <span class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 6.9H21l-5.5 4.2 2 7L12 15.8 6.5 20l2-7L3 8.9h6.6z"/></svg>
+      Handgemacht seit 1998
+    </span>
+    <h1>Eis, das dich zum <span class="swirl">Schmelzen</span> bringt.</h1>
+    <p>Bei Eiszauber wird jede Kugel täglich frisch von Hand gerührt – mit Milch vom Bauernhof nebenan, echten Früchten und einer Extraportion Liebe.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#sorten">
+        Sorten entdecken
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn-ghost" href="#besuch">Öffnungszeiten</a>
+    </div>
+    <div class="hero-stats" role="list">
+      <div class="stat" role="listitem"><b>32</b><span>hausgemachte Sorten</span></div>
+      <div class="stat" role="listitem"><b>100%</b><span>natürliche Zutaten</span></div>
+      <div class="stat" role="listitem"><b>12</b><span>vegane Kreationen</span></div>
+    </div>
+  </div>
+  <div class="hero-canvas-wrap" aria-hidden="true"></div>
+  <div class="scroll-hint" aria-hidden="true">
+    <div class="wheel"></div>
+    Scrollen
+  </div>
+</header>
+
+<!-- Marquee -->
+<div class="marquee-clip" aria-hidden="true">
+<div class="marquee">
+  <div class="marquee-track" id="marquee-track">
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Täglich frisch</span>
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Regionale Zutaten</span>
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Vegane Auswahl</span>
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Ohne künstliche Aromen</span>
+    <span><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Familienrezepte</span>
+  </div>
+</div>
+</div>
+
+<!-- Flavors -->
+<section class="section" id="sorten">
+  <div class="section-head tilt-in">
+    <span class="eyebrow">Unsere Sorten</span>
+    <h2>Eine Sorte nach der anderen</h2>
+    <p>Scroll weiter – jede Sorte tritt groß ins Rampenlicht und macht Platz für die nächste.</p>
+  </div>
+  <div id="flavor-scroll">
+    <div class="flavor-stage" id="flavor-stage">
+      <!-- Slides injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Why us -->
+<section class="section why" id="warum">
+  <div class="section-head tilt-in">
+    <span class="eyebrow">Warum Eiszauber</span>
+    <h2>Gutes Eis braucht gute Gründe</h2>
+    <p>Vier Dinge, die uns wichtig sind – scroll weiter, jeder Grund hüpft einzeln ins Rampenlicht.</p>
+  </div>
+  <div id="why-scroll">
+  <div class="why-grid" id="why-stage">
+    <article class="why-card">
+      <div class="why-icon" style="background: linear-gradient(135deg, #FF9EC4, #E84D8A);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21C7 16.6 3 13.3 3 9.5A4.5 4.5 0 0 1 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5A4.5 4.5 0 0 1 21 9.5c0 3.8-4 7.1-9 11.5z"/></svg>
+      </div>
+      <h3>Von Hand gerührt</h3>
+      <p>Kein Fließband, keine Fertigmischung. Unsere Eismeisterin rührt jede Sorte täglich frisch in kleinen Chargen.</p>
+    </article>
+    <article class="why-card">
+      <div class="why-icon" style="background: linear-gradient(135deg, #7FE0C3, #2E9C82);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3m0 0a6 6 0 0 1 6 6c0 4-2.7 7.3-6 9-3.3-1.7-6-5-6-9a6 6 0 0 1 6-6z"/></svg>
+      </div>
+      <h3>Regional & saisonal</h3>
+      <p>Milch vom Hof Lindner, Erdbeeren aus dem Umland – kurze Wege schmeckt man einfach.</p>
+    </article>
+    <article class="why-card">
+      <div class="why-icon" style="background: linear-gradient(135deg, #A99BFF, #7C6AE8);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v4M16 3v4M4 9h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M9 14l2 2 4-4"/></svg>
+      </div>
+      <h3>Vegan? Aber sicher!</h3>
+      <p>Zwölf Sorten auf Hafer-, Mandel- oder Kokosbasis – so cremig, dass es keiner glaubt.</p>
+    </article>
+    <article class="why-card">
+      <div class="why-icon" style="background: linear-gradient(135deg, #FFD79E, #E8A34D);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M9 13l-1.5 8L12 18.5 16.5 21 15 13"/></svg>
+      </div>
+      <h3>Ausgezeichnet</h3>
+      <p>„Bestes Eis der Stadt" – drei Jahre in Folge. Wir geben den Pokal trotzdem nicht her.</p>
+    </article>
+  </div>
+  </div>
+</section>
+
+<!-- Visit -->
+<section class="section" id="besuch">
+  <div class="visit-grid">
+    <div class="visit-card tilt-in">
+      <h2>Komm auf eine Kugel vorbei</h2>
+      <ul class="hours">
+        <li><span>Montag – Freitag</span><b>11:00 – 21:00</b></li>
+        <li><span>Samstag</span><b>10:00 – 22:00</b></li>
+        <li><span>Sonntag & Feiertage</span><b>12:00 – 20:00</b></li>
+      </ul>
+    </div>
+    <div class="visit-info">
+      <div class="info-row tilt-in">
+        <div class="why-icon" style="background: linear-gradient(135deg, #FF9EC4, #E84D8A);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        </div>
+        <div>
+          <h3>Eiszauber am Marktplatz</h3>
+          <p>Marktplatz 7, 80331 München – direkt am Brunnen, du kannst uns nicht verfehlen.</p>
+        </div>
+      </div>
+      <div class="info-row tilt-in">
+        <div class="why-icon" style="background: linear-gradient(135deg, #7FE0C3, #2E9C82);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg>
+        </div>
+        <div>
+          <h3>Eistorten auf Bestellung</h3>
+          <p>Ruf uns an unter <a href="tel:+49891234567">089 / 123 45 67</a> – Geburtstagstorten brauchen 2 Tage Vorlauf.</p>
+        </div>
+      </div>
+      <div class="info-row tilt-in">
+        <div class="why-icon" style="background: linear-gradient(135deg, #A99BFF, #7C6AE8);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg>
+        </div>
+        <div>
+          <h3>Schreib uns</h3>
+          <p><a href="mailto:hallo@eiszauber.de">hallo@eiszauber.de</a> – wir antworten schneller, als Eis schmilzt.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <a class="nav-logo" href="#top" aria-label="Eiszauber Startseite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 11a5 5 0 1 1 10 0 4 4 0 0 1-1 2.6L12 21l-4-7.4A4 4 0 0 1 7 11z" fill="#E84D8A" stroke="#FF9EC4"/>
+      </svg>
+      Eiszauber
+    </a>
+    <p>© 2026 Eiszauber Eismanufaktur · Marktplatz 7, München · Impressum · Datenschutz</p>
+  </div>
+</footer>
+
+<script src="assets/vendor/three.min.js"></script>
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ============ Flavor cards ============ */
+  var FLAVORS = [
+    { name: 'Erdbeer-Traum', desc: 'Sonnengereifte Erdbeeren, sahnig gerührt – der Sommerklassiker.', price: '1,80 €', tag: 'Klassiker', c1: '#FF9EC4', c2: '#E84D8A' },
+    { name: 'Minz-Schoko', desc: 'Frische Gartenminze trifft dunkle Schokostückchen.', price: '1,80 €', tag: 'Erfrischend', c1: '#7FE0C3', c2: '#2E9C82' },
+    { name: 'Vanille-Wolke', desc: 'Echte Bourbon-Vanille, so fluffig wie eine Wolke.', price: '1,80 €', tag: 'Klassiker', c1: '#FFE8B8', c2: '#E8A34D' },
+    { name: 'Beeren-Blau', desc: 'Heidelbeeren und ein Hauch Lavendel – unser Geheimtipp.', price: '2,00 €', tag: 'Vegan', c1: '#A99BFF', c2: '#7C6AE8' },
+    { name: 'Schoko-Lava', desc: '70% Kakao mit flüssigem Schokoladenkern. Für Mutige.', price: '2,00 €', tag: 'Intensiv', c1: '#B0795C', c2: '#7A4A32' },
+    { name: 'Mango-Sonne', desc: 'Alphonso-Mango auf Kokosbasis – 100% pflanzlich.', price: '2,00 €', tag: 'Vegan', c1: '#FFD79E', c2: '#F0932B' }
+  ];
+
+  var stage = document.getElementById('flavor-stage');
+  FLAVORS.forEach(function (f, i) {
+    var el = document.createElement('article');
+    el.className = 'flavor-slide';
+    el.style.background = 'linear-gradient(145deg, ' + f.c1 + ', ' + f.c2 + ')';
+    el.innerHTML =
+      '<span class="slide-num" aria-hidden="true">0' + (i + 1) + '</span>' +
+      '<span class="tag">' + f.tag + '</span>' +
+      '<div class="blob" aria-hidden="true"></div>' +
+      '<h3>' + f.name + '</h3>' +
+      '<p>' + f.desc + '</p>' +
+      '<span class="price">' + f.price + ' <small>pro Kugel</small></span>';
+    stage.appendChild(el);
+  });
+
+  /* Scroll-pinned flavor spotlight: one flavor centered, the next emerges
+     from depth with a 3D card-deck effect as you keep scrolling. */
+  var flavorSlides = Array.prototype.slice.call(stage.children);
+  if (!reducedMotion && flavorSlides.length) {
+    document.getElementById('sorten').classList.add('is-staged');
+    var flavorScroll = document.getElementById('flavor-scroll');
+    flavorScroll.style.height = ((flavorSlides.length - 1) * 55 + 100) + 'vh';
+
+    function layoutFlavors() {
+      var vh = window.innerHeight;
+      var rect = flavorScroll.getBoundingClientRect();
+      var span = flavorScroll.offsetHeight - vh;
+      var p = span > 0 ? -rect.top / span : 0;
+      p = Math.max(0, Math.min(1, p)) * (flavorSlides.length - 1);
+      flavorSlides.forEach(function (el, i) {
+        var d = i - p, tr, o;
+        if (d >= 0) {
+          /* waiting in the depth stack: rises from lower right out of the depth */
+          var dd = Math.min(d, 3.2);
+          tr = 'translate(-50%, -50%) translate3d(' + (dd * 6) + 'vw, ' + (dd * 6) + 'vh, ' + (-dd * 420) + 'px) rotateY(' + (-dd * 18) + 'deg)';
+          o = 1 - dd * 0.3;
+        } else {
+          /* passed: exits fast upward over the viewer's shoulder, clear of the center */
+          var e = -d;
+          tr = 'translate(-50%, -50%) translate3d(' + (e * -4) + 'vw, ' + (e * -55) + 'vh, ' + (e * 300) + 'px) rotateX(' + (e * 45) + 'deg)';
+          o = 1 - Math.max(0, e - 0.15) * 1.6;
+        }
+        el.style.transform = tr;
+        el.style.opacity = Math.max(0, Math.min(1, o));
+        el.style.zIndex = 100 - Math.round(d * 10);
+        el.style.visibility = o <= 0.01 ? 'hidden' : 'visible';
+      });
+    }
+
+    var flavorTicking = false;
+    window.addEventListener('scroll', function () {
+      if (!flavorTicking) {
+        flavorTicking = true;
+        requestAnimationFrame(function () { layoutFlavors(); flavorTicking = false; });
+      }
+    }, { passive: true });
+    window.addEventListener('resize', layoutFlavors);
+    layoutFlavors();
+  }
+
+  /* Why-us spotlight: same pinned stage, but every card hops in with its
+     own distinct 3D entrance. */
+  var whyStageEl = document.getElementById('why-stage');
+  var whyCards = whyStageEl ? Array.prototype.slice.call(whyStageEl.children) : [];
+  if (!reducedMotion && whyCards.length) {
+    document.getElementById('warum').classList.add('is-staged');
+    var whyScroll = document.getElementById('why-scroll');
+    whyScroll.style.height = ((whyCards.length - 1) * 55 + 100) + 'vh';
+
+    /* One entrance per card, parameterized by d (1 = fully staged, 0 = center):
+       1: flip out of the depth · 2: rolls in from the left ·
+       3: corkscrew drop from above · 4: 3D screw rising from below */
+    var whyEntries = [
+      function (d) { return 'rotateY(' + (-d * 120) + 'deg) translate3d(0, 0, ' + (-d * 420) + 'px)'; },
+      function (d) { return 'translate3d(' + (-d * 82) + 'vw, ' + (d * 8) + 'vh, 0) rotate(' + (-d * 220) + 'deg)'; },
+      function (d) { return 'translate3d(0, ' + (-d * 70) + 'vh, ' + (-d * 150) + 'px) rotateX(' + (d * 55) + 'deg) rotate(' + (d * 100) + 'deg)'; },
+      function (d) { return 'translate3d(0, ' + (d * 45) + 'vh, ' + (-d * 650) + 'px) rotate3d(1, 0.6, 0.3, ' + (d * 150) + 'deg)'; }
+    ];
+
+    function layoutWhy() {
+      var vh = window.innerHeight;
+      var rect = whyScroll.getBoundingClientRect();
+      var span = whyScroll.offsetHeight - vh;
+      var p = span > 0 ? -rect.top / span : 0;
+      p = Math.max(0, Math.min(1, p)) * (whyCards.length - 1);
+      whyCards.forEach(function (el, i) {
+        var d = i - p, tr, o;
+        if (d >= 0) {
+          var dd = Math.min(d, 1.15);
+          tr = whyEntries[i % whyEntries.length](dd);
+          o = 1 - dd * 0.55;
+        } else {
+          /* uniform exit: recedes up into the depth */
+          var e = -d;
+          tr = 'translate3d(0, ' + (e * -26) + 'vh, ' + (-e * 600) + 'px) rotateX(' + (-e * 18) + 'deg)';
+          o = 1 - e * 1.5;
+        }
+        el.style.transform = 'translate(-50%, -50%) ' + tr;
+        el.style.opacity = Math.max(0, Math.min(1, o));
+        el.style.zIndex = 100 - Math.round(Math.abs(d) * 10);
+        el.style.visibility = o <= 0.01 ? 'hidden' : 'visible';
+      });
+    }
+
+    var whyTicking = false;
+    window.addEventListener('scroll', function () {
+      if (!whyTicking) {
+        whyTicking = true;
+        requestAnimationFrame(function () { layoutWhy(); whyTicking = false; });
+      }
+    }, { passive: true });
+    window.addEventListener('resize', layoutWhy);
+    layoutWhy();
+  }
+
+  /* Duplicate marquee content for a seamless loop */
+  var track = document.getElementById('marquee-track');
+  track.innerHTML += track.innerHTML;
+
+  /* ============ Three.js: 3D ice cream hero ============ */
+  var canvas = document.getElementById('hero-canvas');
+  var heroGroup = null;
+
+  if (window.THREE && canvas) {
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0.6, 9);
+
+    /* Lights: soft candy-shop studio */
+    scene.add(new THREE.AmbientLight(0xfff0f5, 0.75));
+    var key = new THREE.DirectionalLight(0xffffff, 0.9);
+    key.position.set(4, 6, 6);
+    scene.add(key);
+    var pinkFill = new THREE.PointLight(0xff9ec4, 0.7, 30);
+    pinkFill.position.set(-5, 2, 4);
+    scene.add(pinkFill);
+    var mintRim = new THREE.PointLight(0x7fe0c3, 0.55, 30);
+    mintRim.position.set(4, -3, -4);
+    scene.add(mintRim);
+
+    heroGroup = new THREE.Group();
+    scene.add(heroGroup);
+
+    /* Waffle cone with procedural criss-cross texture */
+    var texCanvas = document.createElement('canvas');
+    texCanvas.width = texCanvas.height = 256;
+    var tc = texCanvas.getContext('2d');
+    tc.fillStyle = '#D98E48';
+    tc.fillRect(0, 0, 256, 256);
+    tc.strokeStyle = 'rgba(122, 74, 50, 0.55)';
+    tc.lineWidth = 7;
+    for (var i = -256; i < 512; i += 40) {
+      tc.beginPath(); tc.moveTo(i, 0); tc.lineTo(i + 256, 256); tc.stroke();
+      tc.beginPath(); tc.moveTo(i + 256, 0); tc.lineTo(i, 256); tc.stroke();
+    }
+    var waffleTex = new THREE.CanvasTexture(texCanvas);
+    waffleTex.wrapS = waffleTex.wrapT = THREE.RepeatWrapping;
+    waffleTex.repeat.set(3, 2);
+
+    var cone = new THREE.Mesh(
+      new THREE.ConeGeometry(1.05, 2.6, 48, 1, true),
+      new THREE.MeshStandardMaterial({ map: waffleTex, roughness: 0.8, metalness: 0, side: THREE.DoubleSide })
+    );
+    cone.rotation.x = Math.PI;
+    cone.position.y = -1.55;
+    heroGroup.add(cone);
+
+    /* Creamy scoops — individual objects so they can drop onto the cone */
+    function scoopMesh(color, r) {
+      var m = new THREE.Mesh(
+        new THREE.SphereGeometry(r, 48, 48),
+        new THREE.MeshStandardMaterial({ color: color, roughness: 0.35, metalness: 0.02 })
+      );
+      m.scale.y = 0.92;
+      return m;
+    }
+    var scoop1 = scoopMesh(0xE84D8A, 1.12);   /* strawberry (bottom) */
+    scoop1.position.set(0, 0, 0);
+    heroGroup.add(scoop1);
+
+    var scoop2 = scoopMesh(0x7FE0C3, 0.95);   /* mint (middle) */
+    scoop2.position.set(-0.12, 1.05, 0);
+    heroGroup.add(scoop2);
+
+    /* Vanilla top scoop: a group carrying its sprinkles, cherry and stem */
+    var scoop3 = new THREE.Group();
+    scoop3.position.set(0.08, 2.0, 0);
+    var scoop3Main = scoopMesh(0xFFE8B8, 0.8);
+    scoop3.add(scoop3Main);
+
+    var sprinkleColors = [0xE84D8A, 0x7C6AE8, 0x2E9C82, 0xF0932B, 0xffffff];
+    var sprinkleGeo = new THREE.CapsuleGeometry(0.035, 0.14, 4, 8);
+    for (var s = 0; s < 42; s++) {
+      var mat = new THREE.MeshStandardMaterial({ color: sprinkleColors[s % sprinkleColors.length], roughness: 0.4 });
+      var sp = new THREE.Mesh(sprinkleGeo, mat);
+      var theta = Math.random() * Math.PI * 2;
+      var phi = Math.random() * Math.PI * 0.45; /* upper hemisphere only */
+      var R = 0.81;
+      sp.position.set(
+        R * Math.sin(phi) * Math.cos(theta),
+        R * Math.cos(phi) * 0.92,
+        R * Math.sin(phi) * Math.sin(theta)
+      );
+      sp.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      scoop3.add(sp);
+    }
+
+    var cherry = new THREE.Mesh(
+      new THREE.SphereGeometry(0.22, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xC2185B, roughness: 0.15 })
+    );
+    cherry.position.set(0, 0.85, 0);
+    scoop3.add(cherry);
+    var stem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.035, 0.45, 8),
+      new THREE.MeshStandardMaterial({ color: 0x7A4A32, roughness: 0.8 })
+    );
+    stem.position.set(0.06, 1.15, 0);
+    stem.rotation.z = -0.35;
+    scoop3.add(stem);
+    heroGroup.add(scoop3);
+
+    /* Scroll-driven color cycling: each scoop shifts its hue at its own pace */
+    var scoopColors = [scoop1, scoop2, scoop3Main].map(function (mesh, i) {
+      var hsl = { h: 0, s: 0, l: 0 };
+      mesh.material.color.getHSL(hsl);
+      return { mesh: mesh, h: hsl.h, s: hsl.s, l: hsl.l, speed: 0.35 * (1 + i * 0.4) };
+    });
+
+    heroGroup.position.y = -0.4;
+
+    /* ---- Scroll journey: waypoint proxy the render loop eases toward ---- */
+    function visHalfW() {
+      return Math.tan((38 / 2) * Math.PI / 180) * 9 * camera.aspect;
+    }
+    /* Hero resting spot: right column on desktop, centered on narrow screens */
+    function xSide() {
+      if (isNarrow()) return 0;
+      return Math.max(0.8, Math.min(3.2, visHalfW() * 0.6));
+    }
+    function heroY() { return isNarrow() ? 1.1 : 0.2; }
+    /* Travel lane at the screen edge, clear of the content column */
+    function xEdge() {
+      return Math.max(0.9, Math.min(4.3, visHalfW() * 0.82));
+    }
+    function isNarrow() { return camera.aspect < 0.9; }
+    var T = { x: 0, y: -0.4, s: 1, rx: 0, ry: 0, rz: 0 };
+
+    /* Waypoints of the scroll journey. Each leg tumbles through full turns
+       on extra axes and lands upright: leg 1 = forward somersault (rx),
+       leg 2 = barrel roll (rz), leg 3 = both, footer = tips over diving. */
+    var PI = Math.PI;
+    var W0 = { x: xSide,                                   y: heroY, s: 1,    rx: 0,            ry: 0,           rz: 0 };
+    var W1 = { x: function () { return -xEdge(); },        y: function () { return isNarrow() ? -1.6 : -0.05; }, s: 0.62, rx: 2 * PI, ry: PI, rz: 0.14 };
+    var W2 = { x: function () { return xEdge(); },         y: function () { return isNarrow() ? -1.6 : -0.25; }, s: 0.55, rx: 2 * PI, ry: 2 * PI, rz: -2 * PI - 0.12 };
+    var W3 = { x: function () { return -xEdge() * 1.05; }, y: -0.3,  s: 0.5,  rx: 4 * PI,       ry: 3 * PI,      rz: -4 * PI + 0.1 };
+    var W4 = {                                             y: -6,    s: 0.45, rx: 4 * PI + 1.2, ry: 3 * PI + 1.6 };
+
+    /* The journey is computed directly from the scroll position every frame —
+       deterministic at any offset, immune to tween start-value capture. */
+    var journeyLegs = [
+      { sel: '#sorten', from: W0, to: W1, sF: 0.65, eF: 0.15 },
+      { sel: '#warum',  from: W1, to: W2, sF: 0.65, eF: 0.15 },
+      { sel: '#besuch', from: W2, to: W3, sF: 0.65, eF: 0.15 },
+      { sel: 'footer',  from: W3, to: W4, sF: 0.85, eF: 0.50 }
+    ];
+    var JOURNEY_AXES = ['x', 'y', 's', 'rx', 'ry', 'rz'];
+    function evalW(w, k, fb) {
+      var v = w[k];
+      if (v === undefined) return fb;
+      return typeof v === 'function' ? v() : v;
+    }
+    function updateJourney() {
+      var vh = window.innerHeight, sc = window.scrollY;
+      var cur = {};
+      JOURNEY_AXES.forEach(function (k) { cur[k] = evalW(W0, k, 0); });
+      journeyLegs.forEach(function (l) {
+        if (!l.el) l.el = document.querySelector(l.sel);
+        if (!l.el) return;
+        var top = l.el.getBoundingClientRect().top + sc;
+        var s = top - l.sF * vh, e = top - l.eF * vh;
+        var p = (sc - s) / (e - s);
+        if (p <= 0) return;
+        if (p > 1) p = 1;
+        JOURNEY_AXES.forEach(function (k) {
+          var a = evalW(l.from, k, cur[k]);
+          var b = evalW(l.to, k, a);
+          cur[k] = a + (b - a) * p;
+        });
+      });
+      T.x = cur.x; T.y = cur.y; T.s = cur.s;
+      T.rx = cur.rx; T.ry = cur.ry; T.rz = cur.rz;
+    }
+
+    /* Floating candy shapes around the cone */
+    var floaters = [];
+    var floatDefs = [
+      { geo: new THREE.TorusGeometry(0.42, 0.18, 24, 48), color: 0xFF9EC4, pos: [-2.6, 1.6, -1.5] },
+      { geo: new THREE.SphereGeometry(0.34, 32, 32), color: 0x7C6AE8, pos: [2.7, 2.3, -2] },
+      { geo: new THREE.TorusKnotGeometry(0.3, 0.11, 64, 16), color: 0x7FE0C3, pos: [2.5, -1.4, -1] },
+      { geo: new THREE.SphereGeometry(0.22, 32, 32), color: 0xF0932B, pos: [-2.4, -1.8, -0.5] },
+      { geo: new THREE.TorusGeometry(0.26, 0.1, 24, 48), color: 0xFFE8B8, pos: [-1.9, 3.2, -2.5] }
+    ];
+    floatDefs.forEach(function (d, idx) {
+      var mesh = new THREE.Mesh(d.geo, new THREE.MeshStandardMaterial({ color: d.color, roughness: 0.3 }));
+      mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
+      mesh.userData.seed = idx * 1.7;
+      mesh.userData.baseY = d.pos[1];
+      scene.add(mesh);
+      floaters.push(mesh);
+    });
+
+    /* Responsive sizing */
+    function resize() {
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      if (canvas.width !== w || canvas.height !== h) {
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+    }
+    window.addEventListener('resize', resize);
+
+    /* Mouse parallax */
+    var targetRX = 0, targetRY = 0;
+    if (!reducedMotion) {
+      window.addEventListener('pointermove', function (e) {
+        var nx = (e.clientX / window.innerWidth) * 2 - 1;
+        var ny = (e.clientY / window.innerHeight) * 2 - 1;
+        targetRY = nx * 0.45;
+        targetRX = ny * 0.18;
+      });
+    }
+
+    var clock = new THREE.Clock();
+
+    /* Start position: right column on desktop, centered above the copy on mobile */
+    resize();
+    T.x = xSide();
+    T.y = heroY();
+    heroGroup.position.x = T.x;
+    heroGroup.position.y = T.y;
+
+    function tick() {
+      resize();
+      /* Frame-rate independent smoothing: same settle time at any FPS */
+      var dt = Math.min(clock.getDelta(), 0.1);
+      var t = clock.elapsedTime;
+      var kRot = 1 - Math.exp(-4.5 * dt);
+      var kPos = 1 - Math.exp(-6 * dt);
+      if (!reducedMotion) {
+        updateJourney();
+        heroGroup.rotation.y += ((targetRY + T.ry + t * 0.12) - heroGroup.rotation.y) * kRot;
+        heroGroup.rotation.x += ((targetRX + T.rx) - heroGroup.rotation.x) * kRot;
+        heroGroup.rotation.z += (T.rz - heroGroup.rotation.z) * kRot;
+        heroGroup.position.x += (T.x - heroGroup.position.x) * kPos;
+        heroGroup.position.y += ((T.y + Math.sin(t * 0.9) * 0.12) - heroGroup.position.y) * kPos;
+        var s = T.s * (isNarrow() ? 0.62 : 1);
+        heroGroup.scale.x += (s - heroGroup.scale.x) * kPos;
+        heroGroup.scale.y = heroGroup.scale.z = heroGroup.scale.x;
+        var scrollN = window.scrollY / window.innerHeight;
+        scoopColors.forEach(function (o) {
+          var h = (o.h + scrollN * o.speed) % 1;
+          o.mesh.material.color.setHSL(h < 0 ? h + 1 : h, o.s, o.l);
+        });
+        floaters.forEach(function (m) {
+          /* Parallax: candy drifts upward and out as you scroll down */
+          m.position.y = m.userData.baseY + Math.sin(t * 0.8 + m.userData.seed) * 0.25 + scrollN * (1.6 + m.userData.seed);
+          m.rotation.x = t * 0.4 + m.userData.seed;
+          m.rotation.y = t * 0.3 + m.userData.seed;
+        });
+      } else {
+        heroGroup.rotation.y = 0.4;
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    /* Scoop drop needs GSAP; the journey itself runs in updateJourney() */
+    if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      /* Scoop drop: the cone starts empty, the scoops hover above it and
+         fall into place one after another during the first scroll stretch. */
+      /* Scoops float in view around the empty cone and fall into place on scroll */
+      var hoverScale = isNarrow() ? 0.6 : 1;
+      var drops = [
+        { g: scoop1, hx: -2.3 * hoverScale, hy: 1.3 * hoverScale,  rz: 0.55 },
+        { g: scoop2, hx: 1.6 * hoverScale,  hy: 0.7 * hoverScale,  rz: -0.6 },
+        { g: scoop3, hx: 0.3 * hoverScale,  hy: 0.6 * hoverScale,  rz: 0.35 }
+      ];
+      var dropTl = gsap.timeline({
+        scrollTrigger: { trigger: '#top', start: 'top top', end: '+=45%', scrub: 0.5 }
+      });
+      drops.forEach(function (d, i) {
+        var fx = d.g.position.x, fy = d.g.position.y;
+        d.g.position.x = fx + d.hx;
+        d.g.position.y = fy + d.hy;
+        d.g.rotation.z = d.rz;
+        var at = i * 0.45;
+        dropTl.to(d.g.position, { y: fy, ease: 'bounce.out', duration: 1 }, at)
+              .to(d.g.position, { x: fx, ease: 'power1.inOut', duration: 0.45 }, at)
+              .to(d.g.rotation, { z: 0, ease: 'power1.inOut', duration: 0.5 }, at);
+      });
+
+    }
+  }
+
+  /* ============ GSAP: 3D section transitions ============ */
+  if (window.gsap && window.ScrollTrigger && !reducedMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.tilt-in').forEach(function (el) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 70, rotateX: 28, transformPerspective: 900, scale: 0.96 },
+        {
+          opacity: 1, y: 0, rotateX: 0, scale: 1,
+          duration: 0.9, ease: 'back.out(1.4)',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+        });
+    });
+
+    /* Magnetic pull on the primary CTA (single focal element) */
+    var cta = document.querySelector('.btn-primary');
+    if (cta && window.matchMedia('(hover: hover)').matches) {
+      var xTo = gsap.quickTo(cta, 'x', { duration: 0.4, ease: 'elastic.out(1,0.4)' });
+      var yTo = gsap.quickTo(cta, 'y', { duration: 0.4, ease: 'elastic.out(1,0.4)' });
+      cta.addEventListener('mousemove', function (e) {
+        var r = cta.getBoundingClientRect();
+        xTo((e.clientX - r.left - r.width / 2) * 0.3);
+        yTo((e.clientY - r.top - r.height / 2) * 0.3);
+      });
+      cta.addEventListener('mouseleave', function () { xTo(0); yTo(0); });
+    }
+  } else {
+    /* No-motion fallback: make everything visible */
+    document.querySelectorAll('.tilt-in').forEach(function (el) { el.style.opacity = 1; });
+  }
+})();
+</script>
+</body>
+</html>
