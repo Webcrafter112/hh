@@ -561,6 +561,273 @@
   .foot-social svg { width: 20px; height: 20px; }
   .foot-copy { width: 100%; text-align: center; font-size: 0.8rem; color: #6D7F63; margin-top: 12px; }
 
+  /* ============ Loader ============ */
+  #loader {
+    position: fixed; inset: 0; z-index: 2000;
+    display: grid; place-items: center;
+    background: linear-gradient(180deg, #DCE8D0, #A8C68F);
+    overflow: hidden;
+    transition: opacity 900ms var(--ease-out), visibility 0s 900ms;
+  }
+  body.loaded #loader { opacity: 0; visibility: hidden; pointer-events: none; }
+  #loader .l-fog {
+    position: absolute; left: -30%; width: 160%; height: 45%;
+    background: radial-gradient(ellipse 55% 100% at 50% 50%, rgba(255,255,255,0.75), transparent 70%);
+    filter: blur(28px);
+  }
+  #loader .l-fog.a { top: 18%; animation: fog-drift 9s ease-in-out infinite; }
+  #loader .l-fog.b { top: 52%; animation: fog-drift 12s ease-in-out infinite reverse; }
+  .loader-inner { position: relative; text-align: center; z-index: 2; }
+  .loader-brand {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(1.9rem, 5vw, 3.2rem); color: var(--forest);
+    letter-spacing: -0.01em;
+    opacity: 0; animation: hero-in 1.4s var(--ease-out) 0.5s forwards;
+  }
+  .loader-sub {
+    margin-top: 6px; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: #5C6E52; opacity: 0; animation: hero-in 1.2s var(--ease-out) 0.9s forwards;
+  }
+  .loader-frog-x { display: inline-block; animation: hopX 1.5s cubic-bezier(.3,.1,.6,.9) 0.35s both; }
+  .loader-frog-y { display: inline-block; animation: hopY 0.75s cubic-bezier(.35,0,.65,1) 0.35s 2 alternate both; }
+  .loader-frog-x svg { width: 74px; height: auto; display: block; }
+  @keyframes hopX { from { transform: translateX(-16vw); } to { transform: translateX(0); } }
+  @keyframes hopY { from { transform: translateY(0) rotate(6deg); } to { transform: translateY(-56px) rotate(-7deg); } }
+
+  /* ============ Nav: active state, burger, mobile menu ============ */
+  .nav-links a.active { background: rgba(255,255,255,0.22); }
+  .nav.scrolled .nav-links a.active { background: rgba(30,58,40,0.12); color: var(--forest); font-weight: 600; }
+  .nav-burger {
+    display: none; width: 44px; height: 44px; border: none; border-radius: 12px;
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+    place-items: center; color: #fff; transition: background 250ms;
+  }
+  .nav.scrolled .nav-burger { color: var(--forest); background: rgba(30,58,40,0.08); }
+  .nav-burger svg { width: 22px; height: 22px; }
+  @media (max-width: 860px) { .nav-burger { display: grid; } }
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 1500;
+    background: rgba(15, 26, 19, 0.86);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    display: grid; place-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 400ms;
+  }
+  .mobile-menu.open { opacity: 1; pointer-events: auto; }
+  .mobile-menu ul { list-style: none; text-align: center; display: grid; gap: 6px; }
+  .mobile-menu a {
+    display: block; padding: 12px 30px; text-decoration: none;
+    font-family: var(--font-display); font-size: 1.7rem; color: #EAF2E0;
+    border-radius: 16px; transition: background 250ms, transform 250ms;
+  }
+  .mobile-menu a:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+  .mm-close {
+    position: absolute; top: 24px; right: 24px;
+    width: 48px; height: 48px; border: none; border-radius: 50%;
+    background: rgba(255,255,255,0.1); color: #fff; display: grid; place-items: center;
+  }
+  .mm-close svg { width: 22px; height: 22px; }
+
+  /* ============ Petition ============ */
+  .petition-shell {
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(30px, 5vw, 70px);
+    align-items: start;
+  }
+  @media (max-width: 940px) { .petition-shell { grid-template-columns: 1fr; } }
+
+  .progress-wrap { margin: 34px 0 8px; max-width: 460px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .progress-top b { font-family: var(--font-display); font-size: 2rem; font-weight: 600; color: var(--forest); font-variant-numeric: tabular-nums; }
+  .progress-top span { font-size: 0.85rem; color: #6B7663; }
+  .progress-bar { height: 14px; border-radius: 999px; background: #E2DAC8; overflow: hidden; box-shadow: inset 0 2px 5px rgba(30,58,40,0.12); }
+  .progress-fill {
+    height: 100%; width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--moss), #7CAF52);
+    position: relative;
+    transition: width 1.8s var(--ease-out);
+  }
+  .progress-fill::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%);
+    animation: bar-shine 2.6s ease-in-out infinite;
+  }
+  @keyframes bar-shine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  .progress-goal { margin-top: 8px; font-size: 0.82rem; color: #6B7663; }
+
+  .petition-card {
+    position: relative;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(22px) saturate(1.25);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 30px;
+    padding: clamp(28px, 4vw, 46px);
+    box-shadow: 0 40px 100px rgba(30,58,40,0.16);
+    overflow: hidden;
+  }
+  .field { position: relative; margin-bottom: 18px; }
+  .field input {
+    width: 100%; padding: 24px 18px 10px;
+    border: 1.5px solid rgba(30,58,40,0.18); border-radius: 16px;
+    background: rgba(255,255,255,0.85);
+    font: 500 1rem var(--font-body); color: var(--ink);
+    transition: border-color 250ms, box-shadow 250ms;
+  }
+  .field input:focus { outline: none; border-color: var(--moss); box-shadow: 0 0 0 4px rgba(80,124,56,0.14); }
+  .field label {
+    position: absolute; left: 18px; top: 17px;
+    font-size: 0.98rem; color: #7C876F; pointer-events: none;
+    transition: all 220ms var(--ease-out);
+  }
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label {
+    top: 7px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--moss); font-weight: 600;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+  .consent { display: flex; gap: 12px; align-items: flex-start; margin: 6px 0 22px; font-size: 0.85rem; color: #59654F; }
+  .consent input {
+    width: 20px; height: 20px; margin-top: 2px; accent-color: var(--moss); flex-shrink: 0;
+  }
+  .btn-sign {
+    position: relative; width: 100%;
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    background: linear-gradient(135deg, var(--moss), var(--forest));
+    color: #fff; border: none; border-radius: 18px;
+    padding: 18px 30px; font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em;
+    overflow: hidden;
+    transition: transform 300ms var(--ease-out), box-shadow 300ms;
+  }
+  .btn-sign::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 700ms;
+  }
+  .btn-sign:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(30,58,40,0.35); }
+  .btn-sign:hover::before { transform: translateX(100%); }
+  .btn-sign:active { transform: scale(0.98); }
+  .btn-sign svg { width: 20px; height: 20px; }
+  .petition-note { margin-top: 16px; font-size: 0.78rem; color: #8A937D; text-align: center; }
+
+  .petition-success { text-align: center; padding: 20px 0; display: none; }
+  .petition-card.done form { display: none; }
+  .petition-card.done .petition-success { display: block; }
+  .petition-success .ps-frog { width: 110px; margin: 0 auto 6px; animation: cheer 1.6s var(--ease-out); }
+  @keyframes cheer { 0% { transform: translateY(40px) scale(0.6); opacity: 0; } 55% { transform: translateY(-14px) scale(1.06); opacity: 1; } 100% { transform: none; } }
+  .petition-success h3 { font-size: 1.9rem; color: var(--forest); margin-bottom: 10px; }
+  .petition-success p { color: #59654F; font-size: 0.98rem; max-width: 40ch; margin: 0 auto; }
+
+  .leaf-burst { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .leaf-burst .leaf {
+    position: absolute; bottom: -30px;
+    width: 22px; height: 22px; color: var(--moss);
+    animation: leaf-rise var(--dur, 3s) ease-in var(--delay, 0s) forwards;
+    opacity: 0;
+  }
+  @keyframes leaf-rise {
+    0% { transform: translateY(0) rotate(0) scale(0.7); opacity: 0; }
+    12% { opacity: 0.95; }
+    100% { transform: translateY(-620px) translateX(var(--dx, 0px)) rotate(var(--rot, 540deg)) scale(1.1); opacity: 0; }
+  }
+
+  /* ============ Unterstützen ============ */
+  .support-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .support-card {
+    background: rgba(255,255,255,0.66);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 28px; padding: clamp(28px, 3.6vw, 42px);
+    box-shadow: 0 26px 70px rgba(30,58,40,0.12);
+    display: flex; flex-direction: column; gap: 14px;
+    transition: transform 450ms var(--ease-out), box-shadow 450ms;
+  }
+  .support-card:hover { transform: translateY(-8px); box-shadow: 0 40px 90px rgba(30,58,40,0.18); }
+  .support-card .s-icon {
+    width: 58px; height: 58px; border-radius: 18px;
+    background: linear-gradient(140deg, var(--moss), var(--forest));
+    display: grid; place-items: center;
+  }
+  .support-card .s-icon svg { width: 27px; height: 27px; color: #fff; }
+  .support-card h3 { font-size: 1.4rem; color: var(--forest); }
+  .support-card p { font-size: 0.95rem; color: #59654F; flex: 1; }
+  .btn-paypal {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(135deg, var(--moss), var(--forest)); color: #fff;
+    border: none; border-radius: 16px; padding: 16px 26px;
+    font-size: 1rem; font-weight: 600; text-decoration: none;
+    transition: transform 300ms var(--ease-out), box-shadow 300ms;
+  }
+  .btn-paypal:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(30,58,40,0.3); }
+  .btn-paypal svg { width: 20px; height: 20px; }
+  .paypal-note { font-size: 0.78rem; color: #8A937D; }
+  .copy-mail {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.85); border: 1.5px solid rgba(30,58,40,0.16);
+    border-radius: 16px; padding: 8px 8px 8px 18px;
+  }
+  .copy-mail code { font-family: var(--font-body); font-weight: 500; font-size: 0.92rem; color: var(--forest); flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: none; border-radius: 12px; padding: 10px 16px;
+    background: var(--forest); color: #fff; font-size: 0.85rem; font-weight: 600;
+    transition: background 250ms, transform 250ms;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--moss); transform: translateY(-2px); }
+  .copy-btn svg { width: 16px; height: 16px; }
+  .copy-btn.copied { background: var(--moss); }
+  .mini-actions { display: grid; gap: 12px; }
+  .mini-action { display: flex; gap: 14px; align-items: center; }
+  .mini-action .ma-ic {
+    width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+    background: rgba(80,124,56,0.12); display: grid; place-items: center;
+  }
+  .mini-action .ma-ic svg { width: 20px; height: 20px; color: var(--moss); }
+  .mini-action b { display: block; font-size: 0.95rem; color: var(--forest); }
+  .mini-action span { font-size: 0.83rem; color: #6B7663; }
+
+  /* ============ Sponsoren ============ */
+  .sponsor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .sponsor-slot {
+    aspect-ratio: 16 / 10;
+    border-radius: 22px;
+    border: 1.5px dashed rgba(30,58,40,0.25);
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    display: grid; place-items: center;
+    transition: transform 400ms var(--ease-out), background 350ms, border-color 350ms, box-shadow 400ms;
+  }
+  .sponsor-slot svg { width: 34px; height: 34px; color: rgba(30,58,40,0.28); transition: color 350ms, transform 400ms var(--ease-out); }
+  .sponsor-slot:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.75);
+    border-color: var(--moss);
+    box-shadow: 0 24px 50px rgba(30,58,40,0.14);
+  }
+  .sponsor-slot:hover svg { color: var(--moss); transform: scale(1.15) rotate(-6deg); }
+  .sponsor-note { font-size: 0.85rem; color: #6B7663; margin-bottom: 56px; }
+  .sponsor-cta {
+    background: rgba(255,255,255,0.66);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 28px;
+    padding: clamp(30px, 4.5vw, 52px);
+    box-shadow: 0 30px 80px rgba(30,58,40,0.13);
+    display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: space-between;
+  }
+  .sponsor-cta h3 { font-size: clamp(1.5rem, 3vw, 2.1rem); color: var(--forest); margin-bottom: 8px; }
+  .sponsor-cta p { max-width: 52ch; color: #59654F; font-size: 0.97rem; }
+  .btn-forest {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--moss), var(--forest)); color: #fff;
+    border: none; border-radius: 999px; padding: 16px 32px;
+    font-size: 1rem; font-weight: 600; text-decoration: none;
+    transition: transform 300ms var(--ease-out), box-shadow 300ms;
+  }
+  .btn-forest:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(30,58,40,0.3); }
+  .btn-forest svg { width: 18px; height: 18px; }
+
   /* ============ Reduced motion ============ */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -572,6 +839,26 @@
 </head>
 <body>
 
+<!-- ======= Loader ======= -->
+<div id="loader" aria-hidden="true">
+  <div class="l-fog a"></div>
+  <div class="l-fog b"></div>
+  <div class="loader-inner">
+    <span class="loader-frog-x"><span class="loader-frog-y">
+      <svg viewBox="0 0 120 90" aria-hidden="true">
+        <ellipse cx="60" cy="62" rx="34" ry="24" fill="#4C7A31"/>
+        <circle cx="44" cy="34" r="13" fill="#4C7A31"/><circle cx="76" cy="34" r="13" fill="#4C7A31"/>
+        <circle cx="44" cy="32" r="8" fill="#F5F2DC"/><circle cx="76" cy="32" r="8" fill="#F5F2DC"/>
+        <circle cx="44" cy="32" r="3.6" fill="#171A12"/><circle cx="76" cy="32" r="3.6" fill="#171A12"/>
+        <ellipse cx="60" cy="70" rx="18" ry="8" fill="#D8E8B8" opacity=".5"/>
+        <path d="M42 64 Q60 74 78 64" stroke="#2F4D1F" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+    </span></span>
+    <div class="loader-brand">Rettet das Moor</div>
+    <div class="loader-sub">Bürgerinitiative · Althofen</div>
+  </div>
+</div>
+
 <!-- ======= Navigation ======= -->
 <nav class="nav" id="nav" aria-label="Hauptnavigation">
   <a class="nav-logo" href="#top" aria-label="Rettet das Moor – Start">
@@ -581,13 +868,34 @@
     </svg>
     Rettet das Moor
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#top" data-sec="top">Start</a></li>
+    <li><a href="#wichtig" data-sec="wichtig">Das Moor</a></li>
+    <li><a href="#projekt" data-sec="projekt">Bauprojekt</a></li>
+    <li><a href="#petition" data-sec="petition">Petition</a></li>
+    <li><a href="#unterstuetzen" data-sec="unterstuetzen">Unterstützen</a></li>
+    <li><a href="#sponsoren" data-sec="sponsoren">Sponsoren</a></li>
+    <li><a href="#mitmachen" data-sec="mitmachen">Kontakt</a></li>
+  </ul>
+  <button class="nav-burger" id="nav-burger" aria-label="Menü öffnen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu" aria-label="Mobiles Menü">
+  <button class="mm-close" id="mm-close" aria-label="Menü schließen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <ul>
+    <li><a href="#top">Start</a></li>
     <li><a href="#wichtig">Das Moor</a></li>
     <li><a href="#projekt">Bauprojekt</a></li>
-    <li><a href="#initiative">Initiative</a></li>
-    <li><a href="#mitmachen">Mitmachen</a></li>
+    <li><a href="#petition">Petition</a></li>
+    <li><a href="#unterstuetzen">Unterstützen</a></li>
+    <li><a href="#sponsoren">Sponsoren</a></li>
+    <li><a href="#mitmachen">Kontakt</a></li>
   </ul>
-</nav>
+</div>
 
 <!-- ======= Living moor scene (fixed backdrop) ======= -->
 <div id="scene" aria-hidden="true">
@@ -1131,6 +1439,153 @@
   </div>
 </section>
 
+<!-- ======= Petition ======= -->
+<section class="surface white" id="petition">
+  <div class="section-pad">
+    <div class="petition-shell">
+      <div>
+        <span class="kicker" data-reveal>Die Petition</span>
+        <h2 class="display" data-reveal>Deine Stimme<br>für das Moor.</h2>
+        <p class="lede" data-reveal>Mit deiner Unterschrift zeigst du, dass dir der Erhalt des Althofener Moores am Herzen liegt. Jede einzelne Stimme macht die Anliegen der Bürgerinitiative sichtbarer – gegenüber Gemeinde, Planungsbeteiligten und Öffentlichkeit.</p>
+        <div class="progress-wrap" data-reveal>
+          <div class="progress-top">
+            <b id="sig-count">1.243</b>
+            <span>Unterstützerinnen &amp; Unterstützer</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sig-fill"></div></div>
+          <p class="progress-goal">Nächstes Ziel: <b>2.000</b> Unterschriften · Zahl dient als Platzhalter</p>
+        </div>
+      </div>
+      <div class="petition-card" data-reveal id="petition-card">
+        <div class="leaf-burst" id="leaf-burst"></div>
+        <form id="petition-form" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <input type="text" id="pf-vor" name="vorname" placeholder=" " autocomplete="given-name" required>
+              <label for="pf-vor">Vorname</label>
+            </div>
+            <div class="field">
+              <input type="text" id="pf-nach" name="nachname" placeholder=" " autocomplete="family-name" required>
+              <label for="pf-nach">Nachname</label>
+            </div>
+          </div>
+          <div class="field">
+            <input type="email" id="pf-mail" name="email" placeholder=" " autocomplete="email" required>
+            <label for="pf-mail">E-Mail-Adresse</label>
+          </div>
+          <div class="field">
+            <input type="text" id="pf-ort" name="wohnort" placeholder=" " autocomplete="address-level2">
+            <label for="pf-ort">Wohnort (optional)</label>
+          </div>
+          <label class="consent">
+            <input type="checkbox" id="pf-consent" required>
+            <span>Ich habe die Datenschutzerklärung gelesen und bin mit der Verarbeitung meiner Angaben zum Zweck der Petition einverstanden.</span>
+          </label>
+          <button class="btn-sign" type="submit" id="btn-sign">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7a4.2 4.2 0 0 0-6-6l-7 7-2 8z"/><path d="M14.5 5.5l4 4"/></svg>
+            Jetzt unterschreiben
+          </button>
+          <p class="petition-note">Die Online-Übermittlung befindet sich im Aufbau – deine Unterschrift wird derzeit lokal gezählt.</p>
+        </form>
+        <div class="petition-success">
+          <div class="ps-frog">
+            <svg viewBox="0 0 120 90" aria-hidden="true">
+              <ellipse cx="60" cy="62" rx="34" ry="24" fill="#4C7A31"/>
+              <circle cx="44" cy="34" r="13" fill="#4C7A31"/><circle cx="76" cy="34" r="13" fill="#4C7A31"/>
+              <circle cx="44" cy="32" r="8" fill="#F5F2DC"/><circle cx="76" cy="32" r="8" fill="#F5F2DC"/>
+              <circle cx="44" cy="32" r="3.6" fill="#171A12"/><circle cx="76" cy="32" r="3.6" fill="#171A12"/>
+              <ellipse cx="60" cy="70" rx="18" ry="8" fill="#D8E8B8" opacity=".5"/>
+              <path d="M40 62 Q60 78 80 62" stroke="#2F4D1F" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 id="ps-title">Danke!</h3>
+          <p>Deine Stimme für das Moor ist gezählt. Quak Norris und die ganze Initiative sagen danke – erzähl auch deinen Nachbarn davon!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= Unterstützen ======= -->
+<section class="surface" id="unterstuetzen">
+  <div class="section-pad">
+    <span class="kicker" data-reveal>Unterstützen</span>
+    <h2 class="display" data-reveal>Gemeinsam können wir das Moor schützen.</h2>
+    <div class="support-grid">
+      <article class="support-card" data-reveal>
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21C7 16.6 3 13.3 3 9.5A4.5 4.5 0 0 1 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5A4.5 4.5 0 0 1 21 9.5c0 3.8-4 7.1-9 11.5z"/></svg></div>
+        <h3>Spenden</h3>
+        <p>Jeder Beitrag hilft der Initiative bei Information, Material und fachlicher Begleitung – unabhängig von der Höhe.</p>
+        <a class="btn-paypal" href="#" aria-disabled="true" onclick="return false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21 8 5.5A2.5 2.5 0 0 1 10.5 3h5A4.5 4.5 0 0 1 20 7.5c0 3-2.5 5.5-5.5 5.5H11l-1 8z"/></svg>
+          Per PayPal unterstützen
+        </a>
+        <span class="paypal-note">Der PayPal-Link wird derzeit eingerichtet.</span>
+      </article>
+      <article class="support-card" data-reveal>
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg></div>
+        <h3>Kontakt</h3>
+        <p>Fragen, Ideen oder Unterstützung anbieten? Schreib uns – wir freuen uns über jede Nachricht.</p>
+        <div class="copy-mail">
+          <code id="mail-text">rettedasmoor@gmail.com</code>
+          <button class="copy-btn" id="copy-mail-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            Kopieren
+          </button>
+        </div>
+      </article>
+      <article class="support-card" data-reveal>
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+        <h3>Weitere Unterstützung</h3>
+        <p>Auch ohne Geld kannst du viel bewegen:</p>
+        <div class="mini-actions">
+          <div class="mini-action">
+            <div class="ma-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+            <div><b>Inhalte teilen</b><span>Beiträge der Initiative weiterverbreiten</span></div>
+          </div>
+          <div class="mini-action">
+            <div class="ma-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+            <div><b>Freunde informieren</b><span>Im Gespräch bleiben – online wie offline</span></div>
+          </div>
+          <div class="mini-action">
+            <div class="ma-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-6 0v4H5l1.5 11h11L19 9z" opacity="0"/><path d="M7 10v11M3 21h18M7 11l5-7 2.4 3.4L18 6l3 5H7z" opacity="0"/><path d="M12 17.3l-5.4 3 1-6-4.4-4.2 6.1-.9L12 3.7l2.7 5.5 6.1.9-4.4 4.2 1 6z"/></svg></div>
+            <div><b>Initiative weiterempfehlen</b><span>@rettedasmoor auf Instagram folgen &amp; erwähnen</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======= Sponsoren ======= -->
+<section class="surface white" id="sponsoren">
+  <div class="section-pad">
+    <span class="kicker" data-reveal>Unsere Sponsoren</span>
+    <h2 class="display" data-reveal>Gemeinsam für die Zukunft des Moores.</h2>
+    <div class="sponsor-grid" data-reveal>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <div class="sponsor-slot" title="Dieser Platz ist für zukünftige Unterstützer reserviert."><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4C11 9 8.5 13 8.5 17a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+    </div>
+    <p class="sponsor-note" data-reveal>Diese Plätze sind für zukünftige Unterstützer reserviert.</p>
+    <div class="sponsor-cta" data-reveal>
+      <div>
+        <h3>Sponsor werden</h3>
+        <p>Unternehmen, Organisationen und Partner können gemeinsam mit uns einen Beitrag zum Erhalt des Althofener Moores leisten.</p>
+      </div>
+      <a class="btn-forest" href="#mitmachen">
+        Sponsor werden
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ======= Mitmachen ======= -->
 <section class="join" id="mitmachen">
   <div class="join-sun" aria-hidden="true"></div>
@@ -1183,7 +1638,7 @@
         Kontakt
       </a>
     </div>
-    <p class="foot-copy">© 2026 Bürgerinitiative Rettet das Moor · Althofen · Impressum · Datenschutz</p>
+    <p class="foot-copy">© 2026 Bürgerinitiative Rettet das Moor · Althofen · Impressum · Datenschutz · Maskottchen: Quak Norris 🐸</p>
   </div>
 </footer>
 
@@ -1478,6 +1933,117 @@
   soundBtn.addEventListener('click', function () {
     if (soundNodes) { stopSound(); soundBtn.classList.remove('playing'); }
     else { startSound(); soundBtn.classList.add('playing'); }
+  });
+
+  /* ============ Loader ============ */
+  var loaderDone = false;
+  function finishLoader() {
+    if (loaderDone) return;
+    loaderDone = true;
+    document.body.classList.add('loaded');
+  }
+  if (reducedMotion) { finishLoader(); }
+  else {
+    window.addEventListener('load', function () { setTimeout(finishLoader, 1900); });
+    setTimeout(finishLoader, 4200); /* safety net */
+  }
+
+  /* ============ Active nav highlight ============ */
+  var navLinks = {};
+  document.querySelectorAll('#nav-links a[data-sec]').forEach(function (a) { navLinks[a.dataset.sec] = a; });
+  var secIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var id = en.target.id === 'top' ? 'top' : en.target.id;
+      Object.keys(navLinks).forEach(function (k) { navLinks[k].classList.toggle('active', k === id); });
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  ['top', 'wichtig', 'projekt', 'petition', 'unterstuetzen', 'sponsoren', 'mitmachen'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) secIO.observe(el);
+  });
+
+  /* ============ Mobile menu ============ */
+  var mm = document.getElementById('mobile-menu');
+  document.getElementById('nav-burger').addEventListener('click', function () { mm.classList.add('open'); });
+  document.getElementById('mm-close').addEventListener('click', function () { mm.classList.remove('open'); });
+  mm.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { mm.classList.remove('open'); }); });
+
+  /* ============ Petition ============ */
+  var SIG_BASE = 1243, SIG_GOAL = 2000;
+  var sigCountEl = document.getElementById('sig-count');
+  var sigFill = document.getElementById('sig-fill');
+  var petitionCard = document.getElementById('petition-card');
+  var petitionForm = document.getElementById('petition-form');
+  var signed = false;
+  try { signed = localStorage.getItem('moor-signed') === '1'; } catch (e) {}
+
+  function renderSignatures() {
+    var n = SIG_BASE + (signed ? 1 : 0);
+    sigCountEl.textContent = n.toLocaleString('de-AT');
+    sigFill.style.width = Math.min(100, (n / SIG_GOAL) * 100) + '%';
+  }
+  /* animate the bar in when it scrolls into view */
+  var barIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { renderSignatures(); barIO.unobserve(en.target); }
+    });
+  }, { threshold: 0.5 });
+  barIO.observe(sigFill.parentElement);
+
+  if (signed) {
+    petitionCard.classList.add('done');
+  }
+
+  function leafBurst() {
+    var burst = document.getElementById('leaf-burst');
+    var LEAF = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7 7 4.5 11 4.5 15a7.5 7.5 0 0 0 15 0c0-4-2.5-8-7.5-13z"/></svg>';
+    for (var i = 0; i < 18; i++) {
+      var leaf = document.createElement('span');
+      leaf.className = 'leaf';
+      leaf.innerHTML = LEAF;
+      leaf.style.left = (4 + Math.random() * 92) + '%';
+      leaf.style.setProperty('--dx', ((Math.random() - 0.5) * 140) + 'px');
+      leaf.style.setProperty('--rot', (360 + Math.random() * 540) + 'deg');
+      leaf.style.setProperty('--dur', (2.4 + Math.random() * 1.8) + 's');
+      leaf.style.setProperty('--delay', (Math.random() * 0.55) + 's');
+      leaf.style.color = ['#507C38', '#7CAF52', '#3B5A2C', '#9CC37E'][i % 4];
+      burst.appendChild(leaf);
+    }
+    setTimeout(function () { burst.innerHTML = ''; }, 5200);
+  }
+
+  petitionForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!petitionForm.checkValidity()) { petitionForm.reportValidity(); return; }
+    var btn = document.getElementById('btn-sign');
+    var vor = document.getElementById('pf-vor').value.trim();
+    btn.disabled = true;
+    btn.innerHTML = 'Wird gezählt…';
+    setTimeout(function () {
+      signed = true;
+      try { localStorage.setItem('moor-signed', '1'); } catch (err) {}
+      document.getElementById('ps-title').textContent = vor ? ('Danke, ' + vor + '!') : 'Danke!';
+      petitionCard.classList.add('done');
+      renderSignatures();
+      if (!reducedMotion) leafBurst();
+    }, 850);
+  });
+
+  /* ============ Copy email ============ */
+  var copyBtn = document.getElementById('copy-mail-btn');
+  copyBtn.addEventListener('click', function () {
+    var mail = document.getElementById('mail-text').textContent;
+    function ok() {
+      copyBtn.classList.add('copied');
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg> Kopiert';
+      setTimeout(function () {
+        copyBtn.classList.remove('copied');
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg> Kopieren';
+      }, 2400);
+    }
+    if (navigator.clipboard) { navigator.clipboard.writeText(mail).then(ok).catch(ok); }
+    else { ok(); }
   });
 
   /* ============ Share ============ */
